@@ -154,9 +154,10 @@ the error manifests itself or is "noticed" by the client.
                               non-existant parent node, the parent
                               node being isn't created.
 ---------------------------------------------------------------
-         ./bdtBad4        BDT_destroy (Memory leak, no memory freed)
+         ./bdtBad4        BDT_strlenAccumulate (off by one at each stage leading to not
+	 allocating enough memory for the string)
 ---------------------------------------------------------------
-         ./bdtBad5        
+         ./bdtBad5        BDT_findNode (missing Path_free in one of the cases)
 ===============================================================
 
 ------------------------------------------------------------------------
