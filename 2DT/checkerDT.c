@@ -34,11 +34,11 @@ static boolean checkerDT_Children_isValid(Node_T oNNode) {
          printf("cur path: %s\n ", Node_toString(oNChildCur));
          printf("next path: %s\n", Node_toString(oNChildNext));
          printf("compare: %d\n", Node_compare(oNChildCur, oNChildNext));
-         if (Node_compare(oNChildCur, oNChildNext) > 0) {
+         if (strcmp(Node_toString(oNChildCur), Node_toString(oNChildNext)) > 0) {
             fprintf(stderr, "Directories must be in sorted order\n");
             return FALSE;
          }
-         else if (Node_compare(oNChildCur, oNChildNext) == 0) {
+         else if (strcmp(Node_toString(oNChildCur), Node_toString(oNChildNext)) == 0) {
             fprintf(stderr, "Duplicate child found\n");
             return FALSE;
          }
