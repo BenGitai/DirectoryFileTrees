@@ -27,7 +27,7 @@ static boolean checkerDT_Children_isValid(Node_T oNNode) {
    for(i = 1; i < Node_getNumChildren(oNNode) - 1; i++) {
       Node_getChild(oNNode, i, &oNChildNext);
       if (oNChildNext == NULL) {
-         fprintf(stderr, "NULL child found\n");
+         fprintf(stderr, "NULL child found at index %zu\noNChildNext output = %d", i, Node_getChild(oNNode, i, &oNChildNext));
          return FALSE;
       } else {
          if (Node_compare(oNChildCur, oNChildNext) > 0) {
