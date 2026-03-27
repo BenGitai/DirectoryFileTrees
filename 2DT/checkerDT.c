@@ -91,7 +91,7 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
          return FALSE;
       }
    }
-)
+
    return TRUE;
 }
 
