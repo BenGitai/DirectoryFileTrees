@@ -77,6 +77,9 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
       return FALSE;
    }
 
+   /* check that node is contained in its parents children */
+   
+
    return TRUE;
 }
 
