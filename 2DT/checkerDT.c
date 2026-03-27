@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------*/
 /* checkerDT.c                                                        */
-/* Author:                                                            */
+/* Author:    Jeremy Arking and Ben Gitai                                                        */
 /*--------------------------------------------------------------------*/
 
 #include <assert.h>
@@ -10,7 +10,32 @@
 #include "dynarray.h"
 #include "path.h"
 
-
+/* for a node oNNode, returns FALSE if children array is NULL,
+   its children are not sorted or in the leftmost entries of 
+   the array. Otherwise return TRUE */
+static boolean checkerDT_Children_isValid(Node_T oNNode) {
+   boolean seenNULL;
+   size_t i;
+   if (oNNode->oDChildren == NULL) {
+      fprintf(stderr, "oDChildren field cannot be NULL\n");
+      return FALSE;
+   }
+   seenNULL = (oNNode->oDChildren[0] == NULL);
+   for(i = 0; i < oNNode->oDChildren->uPhysLength-1; i++) {
+      if (oNNode->oDChildren[i+1] == NULL) {
+         if (seenNULL) {
+            fprintf(stderr, "Directories must be stored in the leftmost entries in oDChildren array\n");
+            return FALSE;
+         }
+         seenNULL = TRUE;
+      } else {
+         if (strcmp(oNNode->oDChildren[i], oNNode->oDChildren[i+1]) > 0) {
+            fprintf(stderr, "Directories must be in sorted order\n");
+            return FALSE;
+         }
+      }
+   }
+}
 
 /* see checkerDT.h for specification */
 boolean CheckerDT_Node_isValid(Node_T oNNode) {
@@ -37,6 +62,11 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
                  Path_getPathname(oPPPath), Path_getPathname(oPNPath));
          return FALSE;
       }
+   }
+
+   /* checks that the children are stored properly according to specification */
+   if (!checkerDT_Children_isValid(oNNode)) {
+      return FALSE;
    }
 
    return TRUE;
