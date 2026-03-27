@@ -32,6 +32,8 @@ static boolean checkerDT_Children_isValid(Node_T oNNode) {
          fprintf(stderr, "NULL child found at index %d\noNChildNext output = %d", i, Node_getChild(oNNode, i, &oNChildNext));
          return FALSE;
       } else {
+         printf("cur path: %s\n ", Node_toString(oNChildCur));
+         printf("next path: %s\n", Node_toString(oNChildNext));
          if (Node_compare(oNChildCur, oNChildNext) > 0) {
             fprintf(stderr, "Directories must be in sorted order\n");
             return FALSE;
