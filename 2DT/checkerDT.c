@@ -24,8 +24,8 @@ static boolean checkerDT_Children_isValid(Node_T oNNode) {
       return FALSE;
    }
 
-   for(i = 0; i < Node_getNumChildren(oNNode) - 1; i++) {
-      Node_getChild(oNNode, i + 1, &oNChildNext);
+   for(i = 1; i < Node_getNumChildren(oNNode) - 1; i++) {
+      Node_getChild(oNNode, i, &oNChildNext);
       if (oNChildNext == NULL) {
          fprintf(stderr, "NULL child found\n");
          return FALSE;
@@ -35,6 +35,7 @@ static boolean checkerDT_Children_isValid(Node_T oNNode) {
             return FALSE;
          }
       }
+      oNChildCur = oNChildNext;
    }
    return TRUE;
 }
