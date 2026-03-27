@@ -19,15 +19,17 @@ static boolean checkerDT_Children_isValid(Node_T oNNode) {
    size_t i;
 
    Node_getChild(oNNode, 0, &oNChildCur);
+   fprintf(stderr, "Node %s has %zu children\n", Path_getPathname(Node_getPath(oNNode)), Node_getNumChildren(oNNode));
+
    if (oNChildCur == NULL && Node_getNumChildren(oNNode) > 0) {
       fprintf(stderr, "First child is NULL\n");
       return FALSE;
    }
-   fprintf(stderr, "Node %s has %zu children\n", Path_getPathname(Node_getPath(oNNode)), Node_getNumChildren(oNNode));
-   for(i = 1; i < Node_getNumChildren(oNNode) - 1; i++) {
+   
+   for(i = 1; i < Node_getNumChildren(oNNode); i++) {
       Node_getChild(oNNode, i, &oNChildNext);
       if (oNChildNext == NULL) {
-         fprintf(stderr, "NULL child found at index %zu\noNChildNext output = %d", i, Node_getChild(oNNode, i, &oNChildNext));
+         fprintf(stderr, "NULL child found at index %d\noNChildNext output = %d", i, Node_getChild(oNNode, i, &oNChildNext));
          return FALSE;
       } else {
          if (Node_compare(oNChildCur, oNChildNext) > 0) {
