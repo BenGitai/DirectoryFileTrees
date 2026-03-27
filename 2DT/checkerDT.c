@@ -36,6 +36,10 @@ static boolean checkerDT_Children_isValid(Node_T oNNode) {
             fprintf(stderr, "Directories must be in sorted order\n");
             return FALSE;
          }
+         else if (Node_compare(oNChildCur, oNChildNext) == 0) {
+            fprintf(stderr, "Duplicate child found\n");
+            return FALSE;
+         }
       }
       oNChildCur = oNChildNext;
    }
