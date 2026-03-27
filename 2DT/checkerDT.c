@@ -23,7 +23,7 @@ static boolean checkerDT_Children_isValid(Node_T oNNode) {
       fprintf(stderr, "First child is NULL\n");
       return FALSE;
    }
-
+   fprintf(stderr, "Node %s has %zu children\n", Path_getPathname(Node_getPath(oNNode)), Node_getNumChildren(oNNode));
    for(i = 1; i < Node_getNumChildren(oNNode) - 1; i++) {
       Node_getChild(oNNode, i, &oNChildNext);
       if (oNChildNext == NULL) {
