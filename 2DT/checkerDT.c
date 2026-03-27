@@ -50,6 +50,8 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    Node_T oNParent;
    Path_T oPNPath;
    Path_T oPPPath;
+   boolean isChild = FALSE;
+   size_t i;
 
    /* Sample check: a NULL pointer is not a valid node */
    if(oNNode == NULL) {
@@ -78,8 +80,18 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    }
 
    /* check that node is contained in its parents children */
-   
-
+   if (oNParent != NULL) {
+      for (i = 0; i < Node_getNumChildren(oNParent); i++) {
+         if (strcmp(Node_toString(oNNode), Node_toString(oNParent)) == 0) {
+            isChild = TRUE;
+         }
+      }
+      if (!isChild) {
+         fprintf(stderr, "Node is not found in list of parent's children\n");
+         return FALSE;
+      }
+   }
+)
    return TRUE;
 }
 
