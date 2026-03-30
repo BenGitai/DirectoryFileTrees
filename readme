@@ -82,7 +82,8 @@ Regulations in Princeton's Rights, Rules, Responsibilities guide,
 and the COS 217 Generative AI policy, disclose and describe how you
 used AI in completing this assignment:
 
-
+We used Gemini to help with an annoying github merge error that was 
+not discussed in any handouts. 
 
 ------------------------------------------------------------------------
 Student 1: What is your assessment of the assignment? Was it helpful?
@@ -163,6 +164,26 @@ the error manifests itself or is "noticed" by the client.
 ------------------------------------------------------------------------
 What are your critiques of the given DT implementations, as
 specified in Step 2.5?
+
+
+1. Each Node knows its entire path which is extraneuous. 
+Each node should only know exactly what it needs and no more. So,
+it should only store its relative path. Further, storing the absolute path
+leads to situations in which illegal states can be represented because
+a parent and child directory have incompatible absolute paths. 
+
+2. In Node_new, you specify the path and the parent. This is not ideal 
+because the path and the parent may disagree. This is not minimal. It 
+should be possible to determine the parent from the path. 
+
+3. The parameter order is also sometimes inconsistent. For example,
+Node_new and Node_hasChild take path and parent parameters in the 
+opposite order. 
+
+4. In terms of naming conventions, having the node sometimes called
+oNParent is confusing when the function returns info about that node.
+For example, the parameter in Node_getNumChildren should probably
+just be oNNode
 
 
 
