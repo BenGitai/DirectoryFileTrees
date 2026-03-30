@@ -26,7 +26,7 @@ typedef struct dir *Dir_T;
                  or oDParent is NULL but oPPath is not of depth 1
   * ALREADY_IN_TREE if oDParent already has a child with this path
 */
-int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poNResult);
+int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poDResult);
 
 /*
   Destroys and frees all memory allocated for the subtree rooted at
