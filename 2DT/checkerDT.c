@@ -14,27 +14,35 @@
    its children are not sorted or in the leftmost entries of 
    the array. Otherwise return TRUE */
 static boolean checkerDT_Children_isValid(Node_T oNNode) {
-   boolean seenNULL;
+   Node_T oNChildCur;
+   Node_T oNChildNext;
    size_t i;
-   if (oNNode->oDChildren == NULL) {
-      fprintf(stderr, "oDChildren field cannot be NULL\n");
+
+   Node_getChild(oNNode, 0, &oNChildCur);
+
+   if (oNChildCur == NULL && Node_getNumChildren(oNNode) > 0) {
+      fprintf(stderr, "First child is NULL\n");
       return FALSE;
    }
-   seenNULL = (oNNode->oDChildren[0] == NULL);
-   for(i = 0; i < oNNode->oDChildren->uPhysLength-1; i++) {
-      if (oNNode->oDChildren[i+1] == NULL) {
-         if (seenNULL) {
-            fprintf(stderr, "Directories must be stored in the leftmost entries in oDChildren array\n");
-            return FALSE;
-         }
-         seenNULL = TRUE;
+   
+   for(i = 1; i < Node_getNumChildren(oNNode); i++) {
+      Node_getChild(oNNode, i, &oNChildNext);
+      if (oNChildNext == NULL) {
+         fprintf(stderr, "NULL child found");
+         return FALSE;
       } else {
-         if (strcmp(oNNode->oDChildren[i], oNNode->oDChildren[i+1]) > 0) {
+         if (strcmp(Node_toString(oNChildCur), Node_toString(oNChildNext)) > 0) {
             fprintf(stderr, "Directories must be in sorted order\n");
             return FALSE;
          }
+         else if (strcmp(Node_toString(oNChildCur), Node_toString(oNChildNext)) == 0) {
+            fprintf(stderr, "Duplicate child found\n");
+            return FALSE;
+         }
       }
+      oNChildCur = oNChildNext;
    }
+   return TRUE;
 }
 
 /* see checkerDT.h for specification */
@@ -42,6 +50,8 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    Node_T oNParent;
    Path_T oPNPath;
    Path_T oPPPath;
+   boolean isChild = FALSE;
+   size_t i;
 
    /* Sample check: a NULL pointer is not a valid node */
    if(oNNode == NULL) {
@@ -67,6 +77,19 @@ boolean CheckerDT_Node_isValid(Node_T oNNode) {
    /* checks that the children are stored properly according to specification */
    if (!checkerDT_Children_isValid(oNNode)) {
       return FALSE;
+   }
+
+   /* check that node is contained in its parents children */
+   if (oNParent != NULL) {
+      for (i = 0; i < Node_getNumChildren(oNParent); i++) {
+         if (strcmp(Node_toString(oNNode), Node_toString(oNParent)) == 0) {
+            isChild = TRUE;
+         }
+      }
+      if (!isChild) {
+         fprintf(stderr, "Node is not found in list of parent's children\n");
+         return FALSE;
+      }
    }
 
    return TRUE;
