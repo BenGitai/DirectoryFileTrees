@@ -55,13 +55,14 @@ int DT_insertDir(const char *pcPath) {
     ulDepth = Path_getDepth(oPPath);
     ulIndex = 1;
     oDCurr = oDRoot;
+
+    iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
+    if (iStatus != SUCCESS) {
+        Path_free(oPPath);
+        return iStatus;
+    }
     /* handle the case where there is not a root already*/
     if (oDRoot == NULL) {
-        iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
-        if (iStatus != SUCCESS) {
-            Path_free(oPPath);
-            return iStatus;
-        }
         oDRoot = Dir_new(oPPrefix, NULL);
         if (oDRoot == NULL) {
             return MEMORY_ERROR;
@@ -69,9 +70,13 @@ int DT_insertDir(const char *pcPath) {
         ulNewNodes++;
         ulIndex++;
     }
+    /* handle the case where root does not match up to the root of the path */
+    if (Path_comparePath(oDRoot->oPPath, oPPrefix) != 0) {
+        return CONFLICTING_PATH;
+    }
+
+    /* otherwise traverse through file tree adding dirs as needed */
     while (ulIndex <= ulDepth) {
-        Path_T oPPrefix = NULL;
-        Dir_T oDNew = NULL;
         iStatus = Path_prefix(oPPath, ulIndex, &oPPrefix);
         if (iStatus != SUCCESS) {
             Path_free(oPPath);
