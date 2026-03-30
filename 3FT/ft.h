@@ -8,7 +8,7 @@
 
 /*
   A File Tree is a representation of a hierarchy of directories and
-  files: the File Tree is rooted at a directory, directories
+  files: the File Tree is rooted at a Dir, directories
   may be internal nodes or leaves, and files are always leaves.
 */
 
@@ -16,33 +16,33 @@
 #include "a4def.h"
 
 /*
-   Inserts a new directory into the FT with absolute path pcPath.
-   Returns SUCCESS if the new directory is inserted successfully.
+   Inserts a new Dir into the FT with absolute path pcPath.
+   Returns SUCCESS if the new Dir is inserted successfully.
    Otherwise, returns:
    * INITIALIZATION_ERROR if the FT is not in an initialized state
    * BAD_PATH if pcPath does not represent a well-formatted path
    * CONFLICTING_PATH if the root exists but is not a prefix of pcPath
-   * NOT_A_DIRECTORY if a proper prefix of pcPath exists as a file
+   * NOT_A_Dir if a proper prefix of pcPath exists as a file
    * ALREADY_IN_TREE if pcPath is already in the FT (as dir or file)
    * MEMORY_ERROR if memory could not be allocated to complete request
 */
 int FT_insertDir(const char *pcPath);
 
 /*
-  Returns TRUE if the FT contains a directory with absolute path
+  Returns TRUE if the FT contains a Dir with absolute path
   pcPath and FALSE if not or if there is an error while checking.
 */
 boolean FT_containsDir(const char *pcPath);
 
 /*
-  Removes the FT hierarchy (subtree) at the directory with absolute
+  Removes the FT hierarchy (subtree) at the Dir with absolute
   path pcPath. Returns SUCCESS if found and removed.
   Otherwise, returns:
   * INITIALIZATION_ERROR if the FT is not in an initialized state
   * BAD_PATH if pcPath does not represent a well-formatted path
   * CONFLICTING_PATH if the root exists but is not a prefix of pcPath
   * NO_SUCH_PATH if absolute path pcPath does not exist in the FT
-  * NOT_A_DIRECTORY if pcPath is in the FT as a file not a directory
+  * NOT_A_Dir if pcPath is in the FT as a file not a Dir
   * MEMORY_ERROR if memory could not be allocated to complete request
 */
 int FT_rmDir(const char *pcPath);
@@ -57,7 +57,7 @@ int FT_rmDir(const char *pcPath);
    * BAD_PATH if pcPath does not represent a well-formatted path
    * CONFLICTING_PATH if the root exists but is not a prefix of pcPath,
                       or if the new file would be the FT root
-   * NOT_A_DIRECTORY if a proper prefix of pcPath exists as a file
+   * NOT_A_Dir if a proper prefix of pcPath exists as a file
    * ALREADY_IN_TREE if pcPath is already in the FT (as dir or file)
    * MEMORY_ERROR if memory could not be allocated to complete request
 */
@@ -78,7 +78,7 @@ boolean FT_containsFile(const char *pcPath);
   * BAD_PATH if pcPath does not represent a well-formatted path
   * CONFLICTING_PATH if the root exists but is not a prefix of pcPath
   * NO_SUCH_PATH if absolute path pcPath does not exist in the FT
-  * NOT_A_FILE if pcPath is in the FT as a directory not a file
+  * NOT_A_FILE if pcPath is in the FT as a Dir not a file
   * MEMORY_ERROR if memory could not be allocated to complete request
 */
 int FT_rmFile(const char *pcPath);
@@ -111,7 +111,7 @@ void *FT_replaceFileContents(const char *pcPath, void *pvNewContents,
   * MEMORY_ERROR if memory could not be allocated to complete request
 
   When returning SUCCESS,
-  if path is a directory: sets *pbIsFile to FALSE, *pulSize unchanged
+  if path is a Dir: sets *pbIsFile to FALSE, *pulSize unchanged
   if path is a file: sets *pbIsFile to TRUE, and
                      sets *pulSize to the length of file's contents
 
