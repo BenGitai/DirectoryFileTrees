@@ -95,4 +95,5 @@ int DT_insertDir(const char *pcPath) {
         ulIndex++;
         oDCurr = oDnew;
     }
+    return SUCCESS;
 }
