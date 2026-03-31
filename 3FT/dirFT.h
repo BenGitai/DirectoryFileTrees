@@ -39,7 +39,7 @@ size_t Dir_free(Dir_T oDDir);
 Path_T Dir_getPath(Dir_T oDDir);
 
 /*
-  Returns TRUE if oDParent has a child with path oPPath. Returns
+  Returns TRUE if oDParent has a directory child with path oPPath. Returns
   FALSE if it does not.
 
   If oDParent has such a child, stores in *pulChildID the child's
@@ -47,19 +47,43 @@ Path_T Dir_getPath(Dir_T oDDir);
   such a child, stores in *pulChildID the identifier that such a
   child _would_ have if inserted.
 */
-boolean Dir_hasChild(Dir_T oDParent, Path_T oPPath,
+boolean Dir_hasDirChild(Dir_T oDParent, Path_T oPPath,
                          size_t *pulChildID);
 
-/* Returns the number of children that oDParent has. */
-size_t Dir_getNumChildren(Dir_T oDParent);
+/*
+  Returns TRUE if oDParent has a file child with path oPPath. Returns
+  FALSE if it does not.
+
+  If oDParent has such a child, stores in *pulChildID the child's
+  identifier (as used in Node_getChild). If oDParent does not have
+  such a child, stores in *pulChildID the identifier that such a
+  child _would_ have if inserted.
+*/
+boolean Dir_hasFileChild(Dir_T oDParent, Path_T oPPath,
+                         size_t *pulChildID);
+
+/* Returns the number of directory children that oDParent has. */
+size_t Dir_getNumDirChildren(Dir_T oDParent);
+
+/* Returns the number of file children that oDParent has. */
+size_t Dir_getNumFileChildren(Dir_T oDParent);
 
 /*
-  Returns an int SUCCESS status and sets *poNResult to be the child
+  Returns an int SUCCESS status and sets *poNResult to be the directory child
   node of oDParent with identifier ulChildID, if one exists.
   Otherwise, sets *poNResult to NULL and returns status:
   * NO_SUCH_PATH if ulChildID is not a valid child for oDParent
 */
-int Dir_getChild(Dir_T oDParent, size_t ulChildID,
+int Dir_getDirChild(Dir_T oDParent, size_t ulChildID,
+                  Dir_T *poNResult);
+
+/*
+  Returns an int SUCCESS status and sets *poNResult to be the file child
+  node of oDParent with identifier ulChildID, if one exists.
+  Otherwise, sets *poNResult to NULL and returns status:
+  * NO_SUCH_PATH if ulChildID is not a valid child for oDParent
+*/
+int Dir_getFileChild(Dir_T oDParent, size_t ulChildID,
                   Dir_T *poNResult);
 
 /*
