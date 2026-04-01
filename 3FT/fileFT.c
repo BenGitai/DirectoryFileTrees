@@ -2,6 +2,13 @@
 /* file.c                                                             */
 /* Author: Jeremy Arking and Ben Gitai                                */
 /*--------------------------------------------------------------------*/
+#include <stdlib.h>
+#include <assert.h>
+#include <string.h>
+#include "dynarray.h"
+#include "dirFT.h"
+#include "fileFT.h"
+#include "path.h"
 
 struct file {
     /* the Path object corresponding to the file */
@@ -24,20 +31,21 @@ static int File_compareString(const File_T oFFirst,
    assert(pcSecond != NULL);
 
    return Path_compareString(oFFirst->oPPath, pcSecond);
-}
+   }
 
-File_T File_new(Path_T oPPath, Dir_T oDParent, void *contents) {
+int File_new(Path_T oPPath, Dir_T oDParent, void *contents) {
+  File_T result;
   assert(oPPath != NULL);
   assert(oDParent != NULL);
   
-  File_T result = malloc(sizeof(struct file));
+  result = malloc(sizeof(struct file));
   if (result == NULL) {
     return NULL;
   }
   result->oPPath = oPPath;
   result->oDParent = oDParent;
   result->contents = contents;
-  return result;
+  return 0;
 }
 
 /*
@@ -65,7 +73,7 @@ Path_T File_getPath(File_T oFFile) {
   Returns a the parent File of oFFile.
   Returns NULL if oFFile is the root and thus has no parent.
 */
-File_T File_getParent(File_T oFFile) {
+Dir_T File_getParent(File_T oFFile) {
   assert(oFFile != NULL);
 
   return oFFile->oDParent;
@@ -80,7 +88,7 @@ int File_compare(File_T oFFirst, File_T oFSecond) {
   assert(oFFirst != NULL);
   assert(oFSecond != NULL);
 
-  return Path_comparePath(oFFirst->oPPath, oFSecond->opPath);
+  return Path_comparePath(oFFirst->oPPath, oFSecond->oPPath);
 }
 
 /*

@@ -11,8 +11,10 @@
 #include "path.h"
 
 
-/* A Node_T is a node in a Directory Tree */
+/* A Dir_T is a Directory in a File Tree */
 typedef struct dir *Dir_T;
+/* a File_T is a file in a file tree */
+typedef struct file *File_T;
 
 /*
   Creates a new node in the Directory Tree, with path oPPath and
@@ -84,7 +86,7 @@ int Dir_getDirChild(Dir_T oDParent, size_t ulChildID,
   * NO_SUCH_PATH if ulChildID is not a valid child for oDParent
 */
 int Dir_getFileChild(Dir_T oDParent, size_t ulChildID,
-                  Dir_T *poNResult);
+                  File_T *poNResult);
 
 /*
   Returns a the parent node of oDDir.

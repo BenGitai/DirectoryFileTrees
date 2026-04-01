@@ -8,6 +8,8 @@
 #include <string.h>
 #include "dynarray.h"
 #include "dirFT.h"
+#include "fileFT.h"
+#include "path.h"
 /* #include "checkerDT.h" */
 
 /* A directory node in a FT */
@@ -128,7 +130,7 @@ int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poDResult) {
       }
 
       /* parent must not already have child with this path */
-      if(Node_hasChild(oDParent, oPPath, &ulIndex)) {
+      if(Dir_hasDirChild(oDParent, oPPath, &ulIndex)) {
          Path_free(psNew->oPPath);
          free(psNew);
          *poDResult = NULL;
@@ -158,7 +160,7 @@ int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poDResult) {
 
    /* Link into parent's children list */
    if(oDParent != NULL) {
-      iStatus = Dir_addChild(oDParent, psNew, ulIndex);
+      iStatus = Dir_addDirChild(oDParent, psNew, ulIndex);
       if(iStatus != SUCCESS) {
          Path_free(psNew->oPPath);
          free(psNew);

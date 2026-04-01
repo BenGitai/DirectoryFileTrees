@@ -9,10 +9,7 @@
 #include <stddef.h>
 #include "a4def.h"
 #include "path.h"
-
-
-/* A File_T is a file in a File Tree */
-typedef struct fode *File_T;
+#include "dirFT.h"
 
 /*
   Creates a new file in the File Tree, with path oPPath and
@@ -26,7 +23,7 @@ typedef struct fode *File_T;
                  or oFParent is NULL but oPPath is not of depth 1
   * ALREADY_IN_TREE if oFParent already has a child with this path
 */
-File_T File_new(Path_T oPPath, File_T oFParent, void *contents);
+int File_new(Path_T oPPath, Dir_T oFParent, void *contents);
 
 /*
   Destroys and frees all memory allocated for the subtree rooted at
@@ -42,7 +39,13 @@ Path_T File_getPath(File_T oFFile);
   Returns a the parent File of oFFile.
   Returns NULL if oFFile is the root and thus has no parent.
 */
-File_T File_getParent(File_T oFFile);
+Dir_T File_getParent(File_T oFFile);
+
+/* return the contents of oFFile */
+void *File_getContents(File_T oFFile);
+
+/* replace the contents of oFFile with pvNewContents and length ulLength */
+void *File_replaceContents(File_T oFFile, void *pvNewContents, size_t ulLength);
 
 /*
   Compares oFFirst and oFSecoFd lexicographically based oF their paths.
