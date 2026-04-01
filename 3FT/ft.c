@@ -240,7 +240,9 @@ static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
    if(oDRoot == NULL)
       oDRoot = oDFirstNew;
    ulCount += ulNewDirs;
-   oDEnd = &oDCurr;
+   if (oDEnd != NULL) {
+        oDEnd = &oDCurr;
+   }
    return SUCCESS;
 }
 /*--------------------------------------------------------------------*/
@@ -249,7 +251,6 @@ static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
 int FT_insertDir(const char *pcPath) {
    int iStatus;
    Path_T oPPath = NULL;
-   Dir_T *ODEnd;
 
    assert(pcPath != NULL);
 
@@ -261,7 +262,7 @@ int FT_insertDir(const char *pcPath) {
    if(iStatus != SUCCESS)
       return iStatus;
 
-    return insertPath(oPPath, oDEnd);
+    return insertPath(oPPath, NULL);
 }
 
 boolean FT_containsDir(const char *pcPath) {
@@ -292,11 +293,16 @@ int FT_rmDir(const char *pcPath) {
    return SUCCESS;
 }
 
+/* This is a static method that takes in a pcPath string
+corresponding to the absolute path of a file. return 
+the absolute path of the directory containing it  */
+
+
 int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
     int iStatus;
     size_t ulDepth;
     Path_T oPPrevDir;
-    Dir_T *ODEnd;
+    Dir_T oDEnd;
     assert(pcPath != NULL);
    /* validate pcPath and generate a Path_T for it */
    if(!bIsInitialized)
@@ -313,13 +319,304 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
     if (iStatus != SUCCESS) {
         return iStatus;
     }
-    iStatus = insertPath(oPPrevDir, oDEnd);
+    iStatus = insertPath(oPPrevDir, &oDEnd);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
     /* now, insert file if not already in tree */
-    if (Dir_hasDirChild(*oDEnd, oPPath) || Dir_hasFileChild(*oDEnd, oPPath)) {
+    if (Dir_hasDirChild(oDEnd, oPPath) || Dir_hasFileChild(oDEnd, oPPath)) {
         return ALREADY_IN_TREE;
     }
-    return File_new(oPPath, *oDEnd);
+    return File_new(oPPath, oDEnd);
+}
+
+boolean FT_containsFile(const char *pcPath) {
+    int iStatus;
+    size_t ulDepth;
+    Path_T oPPrevDir;
+    Dir_T oDEnd;
+    assert(pcPath != NULL);
+   /* validate pcPath and generate a Path_T for it */
+   if(!bIsInitialized)
+      return INITIALIZATION_ERROR;
+
+   iStatus = Path_new(pcPath, &oPPath);
+   if(iStatus != SUCCESS)
+      return iStatus;
+
+
+    /* insert directory right before the file */
+    ulDepth = Path_getDepth(oPPath);
+    iStatus = Path_prefix(oPPath, ulDpeth-1, oPPrevDir);
+    if (iStatus != SUCCESS) {
+        return iStatus;
+    }
+    iStatus = FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+    if (iStatus != SUCCESS) {
+        return iStatus;
+    }
+    return Dir_hasFileChild(oDEnd, pcPath);
+}
+
+int FT_rmFile(const char *pcPath) {
+    int iStatus;
+    size_t ulDepth;
+    Path_T oPPrevDir;
+    Dir_T oDEnd;
+
+    assert(pcPath != NULL);
+
+    iStatus = Path_new(pcPath, &oPPath);
+    if(iStatus != SUCCESS)
+       return iStatus;
+
+
+    /* insert directory right before the file */
+    ulDepth = Path_getDepth(oPPath);
+    iStatus = Path_prefix(oPPath, ulDpeth-1, oPPrevDir);
+    if (iStatus != SUCCESS) {
+        return iStatus;
+    }
+    iStatus = FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+    if (iStatus != SUCCESS) {
+        return iStatus;
+    }
+    if (Dir_hasDirChild(oDEnd, pcPath)) {
+        return NOT_A_FILE;
+    }
+    if (!Dir_hasFileChild(oDEnd, pcPath)) {
+        return NO_SUCH_PATH;
+    }
+    ulCount -= Dir_freeFile(oDEnd, pcPath);
+    return SUCCESS;
+}
+
+void *FT_getFileContents(const char *pcPath) {
+    int iStatus;
+    size_t ulDepth;
+    size_t ulFileIdx;
+    Path_T oPPrevDir;
+    Dir_T oDEnd;
+    File_T oFFile;
+
+    assert(pcPath != NULL);
+
+    iStatus = Path_new(pcPath, &oPPath);
+    if(iStatus != SUCCESS)
+       return NULL;
+
+
+    /* insert directory right before the file */
+    ulDepth = Path_getDepth(oPPath);
+    iStatus = Path_prefix(oPPath, ulDpeth-1, oPPrevDir);
+    if (iStatus != SUCCESS) {
+        return NULL;
+    }
+    iStatus = FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+    if (iStatus != SUCCESS) {
+        return NULL;
+    }
+
+    Dir_hasFileChild(oDEnd, pcPath, &ulFileIdx);
+    iStatus = Dir_getFileChild(oDEnd, ulFileIdx, &oFFile);
+    if (iStatus != SUCCESS) {
+        return NULL;
+    }
+    return File_getContents(file);
+}
+
+void *FT_replaceFileContents(const char *pcPath, void *pvNewContents,
+                             size_t ulNewLength) {
+    int iStatus;
+    size_t ulDepth;
+    size_t ulFileIdx;
+    Path_T oPPrevDir;
+    Dir_T oDEnd;
+    File_T oFFile;
+
+    assert(pcPath != NULL);
+
+    iStatus = Path_new(pcPath, &oPPath);
+    if(iStatus != SUCCESS)
+       return NULL;
+
+
+    /* insert directory right before the file */
+    ulDepth = Path_getDepth(oPPath);
+    iStatus = Path_prefix(oPPath, ulDpeth-1, oPPrevDir);
+    if (iStatus != SUCCESS) {
+        return NULL;
+    }
+    iStatus = FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+    if (iStatus != SUCCESS) {
+        return NULL;
+    }
+
+    Dir_hasFileChild(oDEnd, pcPath, &ulFileIdx);
+    iStatus = Dir_getFileChild(oDEnd, ulFileIdx, &oFFile);
+    if (iStatus != SUCCESS) {
+        return NULL;
+    }
+    return File_replaceContents(oFFile, pvNewContents, ulNewLength);
+}
+
+int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
+    int iStatus;
+    size_t ulDepth;
+    Path_T oPPrevDir;
+    Dir_T oDEnd;
+    Dir_T oDDir;
+    File_T oFFile; 
+    assert(pcPath != NULL);
+   /* validate pcPath and generate a Path_T for it */
+   if(!bIsInitialized)
+      return INITIALIZATION_ERROR;
+
+   iStatus = Path_new(pcPath, &oPPath);
+   if(iStatus != SUCCESS)
+      return iStatus;
+
+
+    /* insert directory right before the file */
+    ulDepth = Path_getDepth(oPPath);
+    iStatus = Path_prefix(oPPath, ulDpeth-1, oPPrevDir);
+    if (iStatus != SUCCESS) {
+        return iStatus;
+    }
+    iStatus = FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+    if (iStatus != SUCCESS) {
+        return iStatus;
+    }
+    if (Dir_getDirChild(oDEnd, pcPath, &oDDir) == SUCCESS) {
+        *pbIsFile = FALSE;
+        return SUCCESS;   
+    }
+    if (Dir_getFileChild(oDEnd, pcPath, &oFFile) == SUCCESS) {
+        pbIsFile = TRUE;
+        pulSize = File_getContentSize(oFFile);
+        return SUCCESS;
+    } 
+    return NO_SUCH_PATH;
+}
+
+int FT_init(void) {
+   if(bIsInitialized)
+      return INITIALIZATION_ERROR;
+
+   bIsInitialized = TRUE;
+   oDRoot = NULL;
+   ulCount = 0;
+
+   return SUCCESS;
+}
+
+int FT_destroy(void) {
+   if(!bIsInitialized)
+      return INITIALIZATION_ERROR;
+
+   if(oDRoot) {
+      ulCount -= Dir_free(oDRoot);
+      oDRoot = NULL;
+   }
+
+   bIsInitialized = FALSE;
+   return SUCCESS;
+}
+
+/* --------------------------------------------------------------------
+
+  The following auxiliary functions are used for generating the
+  string representation of the DT.
+*/
+
+/*
+  Performs a pre-order traversal of the tree rooted at n,
+  inserting each payload to DynArray_T d beginning at index i.
+  Returns the next unused index in d after the insertion(s).
+*/
+static size_t FT_preOrderTraversal(Dir_T n, DynArray_T d, size_t i) {
+   size_t c;
+
+   assert(d != NULL);
+
+   if(n != NULL) {
+      (void) DynArray_set(d, i, n);
+      i++;
+      for(c = 0; c < Dir_getNumDirChildren(n); c++) {
+         int iStatus;
+         Dir_T oDChild = NULL;
+         iStatus = Dir_getDirChild(n,c, &oDChild);
+         assert(iStatus == SUCCESS);
+         i = FT_preOrderTraversal(oDChild, d, i);
+      }
+   }
+   return i;
+}
+
+/*
+  Alternate version of strlen that uses pulAcc as an in-out parameter
+  to accumulate a string length, rather than returning the length of
+  oNNode's path, and also always adds one addition byte to the sum.
+*/
+static void FT_strlenAccumulate(Dir_T oDDir, size_t *pulAcc) {
+    size_t c;
+    File_T oFFile;
+   assert(pulAcc != NULL);
+
+   if(oDDir != NULL)
+      *pulAcc += (Path_getStrLength(Dir_getPath(oDDir)) + 1);
+    for (c = 0; c < Dir_getNumFileChildren(oDDir); c++) {
+        *pulAcc += (Path_getStrLength(
+            File_getPath(Dir_getFileChild(oDDir, c, &oFFile))) + 1);
+    } 
+}
+
+/*
+  Alternate version of strcat that inverts the typical argument
+  order, appending oNNode's path onto pcAcc, and also always adds one
+  newline at the end of the concatenated string.
+*/
+static void FT_strcatAccumulate(Dir_T oDDir, char *pcAcc) {
+   assert(pcAcc != NULL);
+   File_T oFFile;
+
+   if(oDDir != NULL) {
+        for (c = 0; c < Dir_getNumFileChildren(oDDir); c++) {
+            Dir_getFileChild(oDDir, c, &oFFile);
+            strcat(pcAcc, Path_getPathname(File_getPath(oFFile)));
+            strcat(pcAcc, "\n");
+      } 
+      strcat(pcAcc, Path_getPathname(Dir_getPath(oDDir)));
+      strcat(pcAcc, "\n");
+   }
+}
+/*--------------------------------------------------------------------*/
+
+char *DT_toString(void) {
+   DynArray_T nodes;
+   size_t totalStrlen = 1;
+   char *result = NULL;
+
+   if(!bIsInitialized)
+      return NULL;
+
+   nodes = DynArray_new(ulCount);
+   (void) DT_preOrderTraversal(oDRoot, nodes, 0);
+
+   DynArray_map(nodes, (void (*)(void *, void*)) FT_strlenAccumulate,
+                (void*) &totalStrlen);
+
+   result = malloc(totalStrlen);
+   if(result == NULL) {
+      DynArray_free(nodes);
+      return NULL;
+   }
+   *result = '\0';
+
+   DynArray_map(nodes, (void (*)(void *, void*)) FT_strcatAccumulate,
+                (void *) result);
+
+   DynArray_free(nodes);
+
+   return result;
 }

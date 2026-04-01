@@ -268,7 +268,7 @@ int  Dir_getDirChild(Dir_T oDParent, size_t ulChildID,
 }
 
 int  Dir_getFileChild(Dir_T oDParent, size_t ulChildID,
-                   Dir_T *poNResult) {
+                   File_T *poNResult) {
 
    assert(oDParent != NULL);
    assert(poNResult != NULL);
