@@ -240,7 +240,7 @@ static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
       oDRoot = oDFirstNew;
    ulCount += ulNewDirs;
    if (oDEnd != NULL) {
-        oDEnd = &oDCurr;
+        *oDEnd = oDCurr;
    }
    return SUCCESS;
 }
@@ -320,29 +320,11 @@ static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
 
 int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
     int iStatus;
-    size_t ulDepth;
     size_t ulIdx;
-    Path_T oPPath;
     Path_T oPPrevDir;
     Dir_T oDEnd;
-    File_T oFFile;
 
-    assert(pcPath != NULL);
-   /* validate pcPath and generate a Path_T for it */
-   if(!bIsInitialized)
-      return INITIALIZATION_ERROR;
-
-   iStatus = Path_new(pcPath, &oPPath);
-   if(iStatus != SUCCESS)
-      return iStatus;
-
-
-    /* insert directory right before the file */
-    ulDepth = Path_getDepth(oPPath);
-    if (ulDepth == 1) {
-      return CONFLICTING_PATH;
-    }
-    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
+    iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
