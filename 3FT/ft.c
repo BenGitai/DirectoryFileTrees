@@ -339,6 +339,9 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
 
     /* insert directory right before the file */
     ulDepth = Path_getDepth(oPPath);
+    if (ulDepth == 1) {
+      return CONFLICTING_PATH;
+    }
     iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
