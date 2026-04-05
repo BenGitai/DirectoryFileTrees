@@ -314,7 +314,7 @@ static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
     if (iStatus != SUCCESS) {
         return iStatus;
     }
-    iStatus = FT_findDir(Path_getPathname(oPPrevDir), oDDir);
+    iStatus = FT_findDir(Path_getPathname(*oPPrevDir), oDDir);
     return iStatus;
 }
 
@@ -355,14 +355,17 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
 
 boolean FT_containsFile(const char *pcPath) {
     int iStatus;
+    size_t ulIdx;
     Dir_T oDEnd;
     Path_T oPPath;
+    boolean result;
 
     iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPath);
     if (iStatus != SUCCESS) {
         return FALSE;
     }
-    return Dir_hasFileChild(oDEnd, oPPath, &ulIdx);
+    result = Dir_hasFileChild(oDEnd, oPPath, &ulIdx);
+    return result;
 }
 
 int FT_rmFile(const char *pcPath) {
@@ -375,10 +378,10 @@ int FT_rmFile(const char *pcPath) {
     if (iStatus != SUCCESS) {
         return iStatus;
     }
-    if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
+    if (Dir_hasDirChild(oDEnd, oPPrevDir, &ulIdx)) {
         return NOT_A_FILE;
     }
-    if (!Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
+    if (!Dir_hasFileChild(oDEnd, oPPrevDir, &ulIdx)) {
         return NO_SUCH_PATH;
     }
     ulCount -= Dir_freeFile(oDEnd, ulIdx); 
@@ -387,8 +390,11 @@ int FT_rmFile(const char *pcPath) {
 
 void *FT_getFileContents(const char *pcPath) {
     int iStatus;
+    size_t ulFileIdx;
+    File_T oFFile;
     Path_T oPPrevDir;
     Dir_T oDEnd;
+    void *result;
 
     iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
@@ -400,30 +406,37 @@ void *FT_getFileContents(const char *pcPath) {
     if (iStatus != SUCCESS) {
         return NULL;
     }
-    return File_getContents(oFFile);
+    result =  File_getContents(oFFile);
+    return result;
 }
 
 void *FT_replaceFileContents(const char *pcPath, void *pvNewContents,
                              size_t ulNewLength) {
     int iStatus;
+    size_t ulFileIdx;
+    File_T oFFile;
     Path_T oPPrevDir;
     Dir_T oDEnd;
+    void *result;
 
     iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return NULL;
     }
 
-    Dir_hasFileChild(oDEnd, oPPath, &ulFileIdx);
+    Dir_hasFileChild(oDEnd, oPPrevDir, &ulFileIdx);
     iStatus = Dir_getFileChild(oDEnd, ulFileIdx, &oFFile);
     if (iStatus != SUCCESS) {
         return NULL;
     }
-    return File_replaceContents(oFFile, pvNewContents, ulNewLength);
+    result = File_replaceContents(oFFile, pvNewContents, ulNewLength);
+    return result;
 }
 
 int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
     int iStatus;
+    size_t ulIdx;
+    File_T oFFile;
     Path_T oPPrevDir;
     Dir_T oDEnd;
 
@@ -431,11 +444,11 @@ int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
     if (iStatus != SUCCESS) {
         return iStatus;
     }
-    if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
+    if (Dir_hasDirChild(oDEnd, oPPrevDir, &ulIdx)) {
         *pbIsFile = FALSE;
         return SUCCESS;   
     }
-    if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
+    if (Dir_hasFileChild(oDEnd, oPPrevDir, &ulIdx)) {
         Dir_getFileChild(oDEnd, ulIdx, &oFFile);
         *pbIsFile = TRUE;
         *pulSize = File_getContentSize(oFFile);

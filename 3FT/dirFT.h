@@ -37,6 +37,9 @@ int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poDResult);
 */
 size_t Dir_free(Dir_T oDDir);
 
+/* remove a file child */
+size_t Dir_freeFile(Dir_T oDDir, size_t ulIdx);
+
 /* Returns the path object representing oDDir's absolute path. */
 Path_T Dir_getPath(Dir_T oDDir);
 
