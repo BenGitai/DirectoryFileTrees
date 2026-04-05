@@ -338,14 +338,12 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
    }
 
    /* Root check: if root exists, pcPath must start with root's name */
-   if (oDRoot != NULL) {
-      Path_T oRootPath = Dir_getPath(oDRoot);
-      if (Path_getSharedPrefixDepth(oPPath, oRootPath) == 0) {
-         Path_free(oPPath);
-         return CONFLICTING_PATH;
-      }
+   ulDepth = Path_getDepth(oPPath);
+   if (ulDepth <= 1) {
+      Path_free(oPPath);
+      return CONFLICTING_PATH;
    }
-   
+
    ulDepth = Path_getDepth(oPPath);
    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
    if (iStatus != SUCCESS) {
