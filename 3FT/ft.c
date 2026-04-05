@@ -333,31 +333,41 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
      return INITIALIZATION_ERROR;
 
    iStatus = Path_new(pcPath, &oPPath);
-   if(iStatus != SUCCESS)
+   if(iStatus != SUCCESS){
       return iStatus;
+   }
 
-    ulDepth = Path_getDepth(oPPath);
-    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
-    if (iStatus != SUCCESS) {
-        return iStatus;
-    }
-    iStatus = FT_insertPath(oPPrevDir, &oDEnd);
-    if (iStatus != SUCCESS) {
-        return iStatus;
-    }
-    /* now, insert file if not already in tree */
-    if (Dir_hasDirChild(oDEnd, oPPrevDir, &ulIdx)) {
-        return ALREADY_IN_TREE;
-    } 
-    if (Dir_hasFileChild(oDEnd, oPPrevDir, &ulIdx)) {
-        return ALREADY_IN_TREE;
-    }
-    iStatus = File_new(oPPrevDir, oDEnd, pvContents, ulLength, &oFFile);
-    if (iStatus != SUCCESS) {
-        return iStatus;
-    }
-    iStatus = Dir_addFileChild(oDEnd, oFFile, ulIdx);
-    return iStatus;
+   /* Root check: if root exists, pcPath must start with root's name */
+   if (oDRoot != NULL) {
+      Path_T oRootPath = Dir_getPath(oDRoot);
+      if (Path_getSharedPrefixDepth(oPPath, oRootPath) == 0) {
+         Path_free(oPPath);
+         return CONFLICTING_PATH;
+      }
+   }
+   
+   ulDepth = Path_getDepth(oPPath);
+   iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
+   if (iStatus != SUCCESS) {
+      return iStatus;
+   }
+   iStatus = FT_insertPath(oPPrevDir, &oDEnd);
+   if (iStatus != SUCCESS) {
+      return iStatus;
+   }
+   /* now, insert file if not already in tree */
+   if (Dir_hasDirChild(oDEnd, oPPrevDir, &ulIdx)) {
+      return ALREADY_IN_TREE;
+   } 
+   if (Dir_hasFileChild(oDEnd, oPPrevDir, &ulIdx)) {
+      return ALREADY_IN_TREE;
+   }
+   iStatus = File_new(oPPrevDir, oDEnd, pvContents, ulLength, &oFFile);
+   if (iStatus != SUCCESS) {
+      return iStatus;
+   }
+   iStatus = Dir_addFileChild(oDEnd, oFFile, ulIdx);
+   return iStatus;
 }
 
 boolean FT_containsFile(const char *pcPath) {
