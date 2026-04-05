@@ -298,7 +298,6 @@ the absolute path of the directory containing it  */
 static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
     int iStatus;
     size_t ulDepth;
-    size_t ulIdx;
     Path_T oPPath;
     assert(pcPath != NULL);
    /* validate pcPath and generate a Path_T for it */
@@ -401,7 +400,7 @@ void *FT_getFileContents(const char *pcPath) {
         return NULL;
     }
 
-    Dir_hasFileChild(oDEnd, oPPath, &ulFileIdx);
+    Dir_hasFileChild(oDEnd, oPPrevDir, &ulFileIdx);
     iStatus = Dir_getFileChild(oDEnd, ulFileIdx, &oFFile);
     if (iStatus != SUCCESS) {
         return NULL;
