@@ -17,6 +17,8 @@ struct file {
     Dir_T oDParent;
     /* file contents */
     void *contents;
+    /* file size */
+    size_t ulLength;
 };
 
 /*
@@ -33,7 +35,7 @@ static int File_compareString(const File_T oFFirst,
    return Path_compareString(oFFirst->oPPath, pcSecond);
 }
 
-int File_new(Path_T oPPath, Dir_T oDParent, void *contents, File_T *oFFile) {
+int File_new(Path_T oPPath, Dir_T oDParent, void *contents, size_t ulLength, File_T *oFFile) {
   File_T result;
   assert(oPPath != NULL);
   assert(oDParent != NULL);
@@ -45,6 +47,8 @@ int File_new(Path_T oPPath, Dir_T oDParent, void *contents, File_T *oFFile) {
   result->oPPath = oPPath;
   result->oDParent = oDParent;
   result->contents = contents;
+  result->ulLength = ulLength;
+  *oFFile = result;
   return SUCCESS;
 }
 
@@ -89,13 +93,14 @@ void *File_replaceContents(File_T oFFile, void *pvNewContents, size_t ulLength) 
     assert(oFFile != NULL);
     result = oFFile->contents;
     oFFile->contents = pvNewContents;
+    oFFile->ulLength = ulLength;
     return result;
 }
 
 /* get the size in bytes of the contents of the file */
 int File_getContentSize(File_T oFFile) {
     assert(oFFile != NULL);
-    return 0;
+    return oFFile->ulLength;
 }
 
 /*

@@ -23,7 +23,7 @@
                  or oFParent is NULL but oPPath is not of depth 1
   * ALREADY_IN_TREE if oFParent already has a child with this path
 */
-int File_new(Path_T oPPath, Dir_T oFParent, void *contents, File_T *oFFile);
+int File_new(Path_T oPPath, Dir_T oFParent, void *contents, size_t ulLength, File_T *oFFile);
 
 /*
   Destroys and frees all memory allocated for the subtree rooted at

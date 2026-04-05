@@ -23,6 +23,19 @@ struct dir {
    DynArray_T oDFileChildren;
 };
 
+/*
+  Compares the string representation of oNfirst with a string
+  pcSecond representing a node's path.
+  Returns <0, 0, or >0 if oNFirst is "less than", "equal to", or
+  "greater than" pcSecond, respectively.
+*/
+static int File_compareString(const File_T oFFirst,
+                                 const char *pcSecond) {
+   assert(oFFirst != NULL);
+   assert(pcSecond != NULL);
+
+   return Path_compareString(oFFirst->oPPath, pcSecond);
+}
 
 /*
   Links new child oNChild into oDParent's children array at index
@@ -189,6 +202,8 @@ int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poDResult) {
 size_t Dir_free(Dir_T oDDir) {
    size_t ulIndex;
    size_t ulCount = 0;
+   File_T oF;
+   Dir_T oD;
 
    assert(oDDir != NULL);
    /* assert(CheckerDT_Node_isValid(oDDir)); */
@@ -205,13 +220,15 @@ size_t Dir_free(Dir_T oDDir) {
    }
 
    /* remove all file children */
-   while(DynArray_getLength(oDDir->oDFileChildren) != 0) {
-      ulCount += File_free(DynArray_get(oDDir->oDFileChildren, 0));
+   while(DynArray_getLength(oDDir->oDFileChildren) > 0) {
+      oF = DynArray_removeAt(oDDir->oDFileChildren, 0);
+      ulCount += File_free(oF);
    }
-   DynArray_free(oDDir->oDFileChildren);
+
    /* recursively remove directory children */
-   while(DynArray_getLength(oDDir->oDDirChildren) != 0) {
-      ulCount += Dir_free(DynArray_get(oDDir->oDDirChildren, 0));
+   while(DynArray_getLength(oDDir->oDDirChildren) > 0) {
+      oD = DynArray_removeAt(oDDir->oDDirChildren, 0);
+      ulCount += Dir_free(oD);
    }
    DynArray_free(oDDir->oDDirChildren);
 
@@ -237,16 +254,14 @@ Path_T Dir_getPath(Dir_T oDDir) {
    return oDDir->oPPath;
 }
 
-boolean Dir_hasDirChild(Dir_T oDParent, Path_T oPPath,
-                         size_t *pulChildID) {
+boolean Dir_hasFileChild(Dir_T oDParent, Path_T oPPath, size_t *pulChildID) {
    assert(oDParent != NULL);
    assert(oPPath != NULL);
    assert(pulChildID != NULL);
 
-   /* *pulChildID is the index into oDParent->oDDirChildren */
-   return DynArray_bsearch(oDParent->oDDirChildren,
+   return DynArray_bsearch(oDParent->oDFileChildren,
             (char*) Path_getPathname(oPPath), pulChildID,
-            (int (*)(const void*,const void*)) Dir_compareString);
+            (int (*)(const void*, const void*)) File_compareString);
 }
 
 boolean Dir_hasFileChild(Dir_T oDParent, Path_T oPPath,
