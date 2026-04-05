@@ -248,7 +248,7 @@ boolean Dir_hasFileChild(Dir_T oDParent, Path_T oPPath,
    /* *pulChildID is the index into oDParent->oDFileChildren */
    return DynArray_bsearch(oDParent->oDFileChildren,
             (char*) Path_getPathname(oPPath), pulChildID,
-            (int (*)(const void*,const void*)) File_compareString);
+            (int (*)(const void*,const void*)) File_compare);
 }
 
 size_t Dir_getNumDirChildren(Dir_T oDParent) {

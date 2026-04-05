@@ -13,8 +13,8 @@
 
 /*
   Creates a new file in the File Tree, with path oPPath and
-  parent oFParent. Returns an int SUCCESS status and sets *poFResult
-  to be the new File if successful. Otherwise, sets *poFResult to NULL
+  parent oFParent. Returns an int SUCCESS status and sets *oFFile
+  to be the new File if successful. Otherwise, sets *oFFile to NULL
   and returns status:
   * MEMORY_ERROR if memory could not be allocated to complete request
   * CoFFLICTING_PATH if oFParent's path is not an ancestor of oPPath
@@ -23,7 +23,7 @@
                  or oFParent is NULL but oPPath is not of depth 1
   * ALREADY_IN_TREE if oFParent already has a child with this path
 */
-int File_new(Path_T oPPath, Dir_T oFParent, void *contents);
+int File_new(Path_T oPPath, Dir_T oFParent, void *contents, File_T *oFFile);
 
 /*
   Destroys and frees all memory allocated for the subtree rooted at
@@ -46,6 +46,9 @@ void *File_getContents(File_T oFFile);
 
 /* replace the contents of oFFile with pvNewContents and length ulLength */
 void *File_replaceContents(File_T oFFile, void *pvNewContents, size_t ulLength);
+
+/* get the size in bytes of the contents of the file */
+int File_getContentSize(File_T oFFile);
 
 /*
   Compares oFFirst and oFSecoFd lexicographically based oF their paths.
