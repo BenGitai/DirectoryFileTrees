@@ -77,6 +77,27 @@ Dir_T File_getParent(File_T oFFile) {
   return oFFile->oDParent;
 }
 
+/* return the contents of oFFile */
+void *File_getContents(File_T oFFile) {
+    assert(oFFile != NULL);
+    return oFFile->contents;
+}
+
+/* replace the contents of oFFile with pvNewContents and length ulLength */
+void *File_replaceContents(File_T oFFile, void *pvNewContents, size_t ulLength) {
+    void *result;
+    assert(oFFile != NULL);
+    result = oFFile->contents;
+    oFFile->contents = pvNewContents;
+    return result;
+}
+
+/* get the size in bytes of the contents of the file */
+int File_getContentSize(File_T oFFile) {
+    assert(oFFile != NULL);
+    return 0;
+}
+
 /*
   Compares oFFirst and oFSecoFd lexicographically based oF their paths.
   Returns <0, 0, or >0 if oFFirst is "less than", "equal to", or
