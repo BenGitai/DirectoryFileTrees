@@ -366,6 +366,8 @@ boolean FT_containsFile(const char *pcPath) {
    Path_T oPParentPath = NULL;
    int iStatus;
    size_t ulIdx;
+   size_t ulDepth;
+   boolean result;
 
    assert(pcPath != NULL);
    if(!bIsInitialized) return FALSE;
@@ -375,8 +377,8 @@ boolean FT_containsFile(const char *pcPath) {
    if(iStatus != SUCCESS) return FALSE;
 
    /* Get the parent path */
-   size_t ulDepth = Path_getDepth(oPPath);
-   if(ulDepth <= 1) { // Root cannot be a file
+   ulDepth = Path_getDepth(oPPath);
+   if(ulDepth <= 1) {
       Path_free(oPPath);
       return FALSE;
    }
@@ -397,7 +399,7 @@ boolean FT_containsFile(const char *pcPath) {
       return FALSE;
    }
 
-   boolean result = Dir_hasFileChild(oDFound, oPPath, &ulIdx);
+   result = Dir_hasFileChild(oDFound, oPPath, &ulIdx);
 
    /* Clean up allocated paths */
    Path_free(oPParentPath);
