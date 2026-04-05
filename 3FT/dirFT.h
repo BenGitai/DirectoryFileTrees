@@ -30,6 +30,9 @@ typedef struct file *File_T;
 */
 int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poDResult);
 
+/* Adds file, oFFile, into file children array of oDDir at index ulIdx */
+int Dir_addFileChild(Dir_T oDDir, File_T oFFile, size_t ulIdx);
+
 /*
   Destroys and frees all memory allocated for the subtree rooted at
   oDDir, i.e., deletes this node and all its descendents. Returns the

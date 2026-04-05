@@ -325,6 +325,8 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
     Path_T oPPath;
     Path_T oPPrevDir;
     Dir_T oDEnd;
+    File_T oFFile;
+
     assert(pcPath != NULL);
    /* validate pcPath and generate a Path_T for it */
    if(!bIsInitialized)
@@ -346,10 +348,15 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
         return iStatus;
     }
     /* now, insert file if not already in tree */
-    if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx) || Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
+    if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
+        return ALREADY_IN_TREE;
+    } 
+    if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
         return ALREADY_IN_TREE;
     }
-    return File_new(oPPath, oDEnd, pvContents);
+    oFFile = File_new(oPPath, oDEnd, pvContents);
+    iStatus = Dir_addFileChild(oDEnd, oFFile, ulIdx);
+    return iStatus;
 }
 
 boolean FT_containsFile(const char *pcPath) {

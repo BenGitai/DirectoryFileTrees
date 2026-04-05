@@ -40,7 +40,7 @@ static int Dir_addDirChild(Dir_T oDParent, Dir_T oDChild,
       return MEMORY_ERROR;
 }
 
-static int Dir_addFileChild(Dir_T oDParent, File_T oFChild,
+int Dir_addFileChild(Dir_T oDParent, File_T oFChild,
                          size_t ulIndex) {
    assert(oDParent != NULL);
    assert(oFChild != NULL);
@@ -214,7 +214,7 @@ size_t Dir_free(Dir_T oDDir) {
    return ulCount;
 }
 
-int Dir_freeFile(Dir_T oDDir, size_t ulIdx) {
+size_t Dir_freeFile(Dir_T oDDir, size_t ulIdx) {
    File_T oFFile;
    oFFile = DynArray_removeAt(oDDir->oDFileChildren, ulIdx);
    File_free(oFFile);
