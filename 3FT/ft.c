@@ -321,6 +321,7 @@ static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
 int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
     int iStatus;
     size_t ulIdx;
+    File_T oFFile;
     Path_T oPPrevDir;
     Dir_T oDEnd;
 
@@ -333,13 +334,13 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
         return iStatus;
     }
     /* now, insert file if not already in tree */
-    if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
+    if (Dir_hasDirChild(oDEnd, oPPrevDir, &ulIdx)) {
         return ALREADY_IN_TREE;
     } 
-    if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
+    if (Dir_hasFileChild(oDEnd, oPPrevDir, &ulIdx)) {
         return ALREADY_IN_TREE;
     }
-    iStatus = File_new(oPPath, oDEnd, pvContents, &oFFile);
+    iStatus = File_new(oPPrevDir, oDEnd, pvContents, &oFFile);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
