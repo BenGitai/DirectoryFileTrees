@@ -31,7 +31,7 @@ static int File_compareString(const File_T oFFirst,
    assert(pcSecond != NULL);
 
    return Path_compareString(oFFirst->oPPath, pcSecond);
-   }
+}
 
 int File_new(Path_T oPPath, Dir_T oDParent, void *contents) {
   File_T result;
@@ -55,9 +55,7 @@ int File_new(Path_T oPPath, Dir_T oDParent, void *contents) {
 */
 size_t File_free(File_T oFFile) {
   assert(oFFile != NULL);
-
   free(oFFile);
-
   return 1;
 }
 

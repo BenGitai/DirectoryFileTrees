@@ -295,6 +295,28 @@ int FT_rmDir(const char *pcPath) {
 /* This is a static method that takes in a pcPath string
 corresponding to the absolute path of a file. return 
 the absolute path of the directory containing it  */
+static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
+    int iStatus;
+    size_t ulDepth;
+    size_t ulIdx;
+    Path_T oPPath;
+    assert(pcPath != NULL);
+   /* validate pcPath and generate a Path_T for it */
+   if(!bIsInitialized)
+     return INITIALIZATION_ERROR;
+
+   iStatus = Path_new(pcPath, &oPPath);
+   if(iStatus != SUCCESS)
+      return iStatus;
+
+    ulDepth = Path_getDepth(oPPath);
+    iStatus = Path_prefix(oPPath, ulDepth-1, oPPrevDir);
+    if (iStatus != SUCCESS) {
+        return iStatus;
+    }
+    iStatus = FT_findDir(Path_getPathname(oPPrevDir), oDDir);
+    return iStatus;
+}
 
 
 int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
@@ -333,28 +355,10 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
 
 boolean FT_containsFile(const char *pcPath) {
     int iStatus;
-    size_t ulDepth;
-    size_t ulIdx;
-    Path_T oPPath;
-    Path_T oPPrevDir;
     Dir_T oDEnd;
-    assert(pcPath != NULL);
-   /* validate pcPath and generate a Path_T for it */
-   if(!bIsInitialized)
-     return FALSE;
+    Path_T oPPath;
 
-   iStatus = Path_new(pcPath, &oPPath);
-   if(iStatus != SUCCESS)
-      return FALSE;
-
-
-    /* insert directory right before the file */
-    ulDepth = Path_getDepth(oPPath);
-    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
-    if (iStatus != SUCCESS) {
-        return FALSE;
-    }
-    iStatus = FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+    iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPath);
     if (iStatus != SUCCESS) {
         return FALSE;
     }
@@ -363,26 +367,11 @@ boolean FT_containsFile(const char *pcPath) {
 
 int FT_rmFile(const char *pcPath) {
     int iStatus;
-    size_t ulDepth;
     size_t ulIdx;
-    Path_T oPPath;
     Path_T oPPrevDir;
     Dir_T oDEnd;
 
-    assert(pcPath != NULL);
-
-    iStatus = Path_new(pcPath, &oPPath);
-    if(iStatus != SUCCESS)
-       return iStatus;
-
-
-    /* insert directory right before the file */
-    ulDepth = Path_getDepth(oPPath);
-    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
-    if (iStatus != SUCCESS) {
-        return iStatus;
-    }
-    iStatus = FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+    iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
@@ -392,33 +381,16 @@ int FT_rmFile(const char *pcPath) {
     if (!Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
         return NO_SUCH_PATH;
     }
-    /*ulCount -= File_free(oDEnd, pcPath); FIX*/ 
+    ulCount -= Dir_freeFile(oDEnd, ulIdx); 
     return SUCCESS;
 }
 
 void *FT_getFileContents(const char *pcPath) {
     int iStatus;
-    size_t ulDepth;
-    size_t ulFileIdx;
-    Path_T oPPath;
     Path_T oPPrevDir;
     Dir_T oDEnd;
-    File_T oFFile;
 
-    assert(pcPath != NULL);
-
-    iStatus = Path_new(pcPath, &oPPath);
-    if(iStatus != SUCCESS)
-       return NULL;
-
-
-    /* insert directory right before the file */
-    ulDepth = Path_getDepth(oPPath);
-    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
-    if (iStatus != SUCCESS) {
-        return NULL;
-    }
-    iStatus = FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+    iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return NULL;
     }
@@ -434,27 +406,10 @@ void *FT_getFileContents(const char *pcPath) {
 void *FT_replaceFileContents(const char *pcPath, void *pvNewContents,
                              size_t ulNewLength) {
     int iStatus;
-    size_t ulDepth;
-    size_t ulFileIdx;
-    Path_T oPPath;
     Path_T oPPrevDir;
     Dir_T oDEnd;
-    File_T oFFile;
 
-    assert(pcPath != NULL);
-
-    iStatus = Path_new(pcPath, &oPPath);
-    if(iStatus != SUCCESS)
-       return NULL;
-
-
-    /* insert directory right before the file */
-    ulDepth = Path_getDepth(oPPath);
-    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
-    if (iStatus != SUCCESS) {
-        return NULL;
-    }
-    iStatus = FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+    iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return NULL;
     }
@@ -469,29 +424,10 @@ void *FT_replaceFileContents(const char *pcPath, void *pvNewContents,
 
 int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
     int iStatus;
-    size_t ulDepth;
-    size_t ulIdx;
-    Path_T oPPath;
     Path_T oPPrevDir;
     Dir_T oDEnd;
-    File_T oFFile; 
-    assert(pcPath != NULL);
-   /* validate pcPath and generate a Path_T for it */
-   if(!bIsInitialized)
-      return INITIALIZATION_ERROR;
 
-   iStatus = Path_new(pcPath, &oPPath);
-   if(iStatus != SUCCESS)
-      return iStatus;
-
-
-    /* insert directory right before the file */
-    ulDepth = Path_getDepth(oPPath);
-    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
-    if (iStatus != SUCCESS) {
-        return iStatus;
-    }
-    iStatus = FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+    iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
@@ -500,7 +436,7 @@ int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
         return SUCCESS;   
     }
     if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
-      Dir_getFileChild(oDEnd, ulIdx, &oFFile);
+        Dir_getFileChild(oDEnd, ulIdx, &oFFile);
         *pbIsFile = TRUE;
         *pulSize = File_getContentSize(oFFile);
         return SUCCESS;

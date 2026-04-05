@@ -10,7 +10,6 @@
 #include "dirFT.h"
 #include "fileFT.h"
 #include "path.h"
-/* #include "checkerDT.h" */
 
 /* A directory node in a FT */
 struct dir {
@@ -195,7 +194,12 @@ size_t Dir_free(Dir_T oDDir) {
                                   ulIndex);
    }
 
-   /* recursively remove children */
+   /* remove all file children */
+   while(DynArray_getLength(oDDir->oDFileChildren) != 0) {
+      ulCount += File_free(DynArray_get(oDDir->oDFileChildren, 0));
+   }
+   DynArray_free(oDDir->oDFileChildren);
+   /* recursively remove directory children */
    while(DynArray_getLength(oDDir->oDDirChildren) != 0) {
       ulCount += Dir_free(DynArray_get(oDDir->oDDirChildren, 0));
    }
@@ -208,6 +212,13 @@ size_t Dir_free(Dir_T oDDir) {
    free(oDDir);
    ulCount++;
    return ulCount;
+}
+
+int Dir_freeFile(Dir_T oDDir, size_t ulIdx) {
+   File_T oFFile;
+   oFFile = DynArray_removeAt(oDDir->oDFileChildren, ulIdx);
+   File_free(oFFile);
+   return 1;
 }
 
 Path_T Dir_getPath(Dir_T oDDir) {
