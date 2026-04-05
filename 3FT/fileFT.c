@@ -33,19 +33,19 @@ static int File_compareString(const File_T oFFirst,
    return Path_compareString(oFFirst->oPPath, pcSecond);
 }
 
-int File_new(Path_T oPPath, Dir_T oDParent, void *contents) {
+int File_new(Path_T oPPath, Dir_T oDParent, void *contents, File_T *oFFile) {
   File_T result;
   assert(oPPath != NULL);
   assert(oDParent != NULL);
   
   result = malloc(sizeof(struct file));
   if (result == NULL) {
-    return NULL;
+    return MEMORY_ERROR;
   }
   result->oPPath = oPPath;
   result->oDParent = oDParent;
   result->contents = contents;
-  return 0;
+  return SUCCESS;
 }
 
 /*

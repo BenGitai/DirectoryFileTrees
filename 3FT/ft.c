@@ -354,7 +354,10 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
     if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
         return ALREADY_IN_TREE;
     }
-    oFFile = File_new(oPPath, oDEnd, pvContents);
+    iStatus = File_new(oPPath, oDEnd, pvContents, &oFFile);
+    if (iStatus != SUCCESS) {
+        return iStatus;
+    }
     iStatus = Dir_addFileChild(oDEnd, oFFile, ulIdx);
     return iStatus;
 }
