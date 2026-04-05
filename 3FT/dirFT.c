@@ -148,10 +148,20 @@ int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poDResult) {
    }
    psNew->oDParent = oDParent;
 
-   /* initialize the new node */
+   /* initialize the directory children array */
    psNew->oDDirChildren = DynArray_new(0);
    if(psNew->oDDirChildren == NULL) {
       Path_free(psNew->oPPath);
+      free(psNew);
+      *poDResult = NULL;
+      return MEMORY_ERROR;
+   }
+
+   /* initialize the file children array */
+   psNew->oDFileChildren = DynArray_new(0);
+   if(psNew->oDFileChildren == NULL) {
+      Path_free(psNew->oPPath);
+      DynArray_free(psNew->oDDirChildren);
       free(psNew);
       *poDResult = NULL;
       return MEMORY_ERROR;
