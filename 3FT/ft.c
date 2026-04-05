@@ -309,7 +309,7 @@ static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
       return iStatus;
 
     ulDepth = Path_getDepth(oPPath);
-    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
+    iStatus = Path_prefix(oPPath, ulDepth-1, oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
@@ -361,18 +361,49 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
 }
 
 boolean FT_containsFile(const char *pcPath) {
-    int iStatus;
-    size_t ulIdx;
-    Dir_T oDEnd;
-    Path_T oPPath;
-    boolean result;
+   Path_T oPPath = NULL;
+   Dir_T oDFound = NULL;
+   Path_T oPParentPath = NULL;
+   int iStatus;
+   size_t ulIdx;
 
-    iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPath);
-    if (iStatus != SUCCESS) {
-        return FALSE;
-    }
-    result = Dir_hasFileChild(oDEnd, oPPath, &ulIdx);
-    return result;
+   assert(pcPath != NULL);
+   if(!bIsInitialized) return FALSE;
+
+   /* Create the path object for the file */
+   iStatus = Path_new(pcPath, &oPPath);
+   if(iStatus != SUCCESS) return FALSE;
+
+   /* Get the parent path */
+   size_t ulDepth = Path_getDepth(oPPath);
+   if(ulDepth <= 1) { // Root cannot be a file
+      Path_free(oPPath);
+      return FALSE;
+   }
+   
+   iStatus = Path_prefix(oPPath, ulDepth - 1, &oPParentPath);
+   if(iStatus != SUCCESS) {
+      Path_free(oPPath);
+      return FALSE;
+   }
+
+   /* Find the parent directory */
+   iStatus = FT_findDir(Path_getPathname(oPParentPath), &oDFound);
+   
+   /* If the parent directory is not found or there is an error, return FALSE */
+   if(iStatus != SUCCESS || oDFound == NULL) {
+      Path_free(oPParentPath);
+      Path_free(oPPath);
+      return FALSE;
+   }
+
+   boolean result = Dir_hasFileChild(oDFound, oPPath, &ulIdx);
+
+   /* Clean up allocated paths */
+   Path_free(oPParentPath);
+   Path_free(oPPath);
+
+   return result;
 }
 
 int FT_rmFile(const char *pcPath) {
