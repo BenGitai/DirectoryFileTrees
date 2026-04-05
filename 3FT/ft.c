@@ -309,7 +309,7 @@ static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
       return iStatus;
 
     ulDepth = Path_getDepth(oPPath);
-    iStatus = Path_prefix(oPPath, ulDepth-1, oPPrevDir);
+    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
@@ -337,7 +337,7 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
       return iStatus;
 
     ulDepth = Path_getDepth(oPPath);
-    iStatus = Path_prefix(oPPath, ulDepth-1, oPPrevDir);
+    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
     }

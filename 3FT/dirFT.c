@@ -34,7 +34,7 @@ static int File_compareString(const File_T oFFirst,
    assert(oFFirst != NULL);
    assert(pcSecond != NULL);
 
-   return Path_compareString(oFFirst->oPPath, pcSecond);
+   return Path_compareString(File_getPath(oFFirst), pcSecond);
 }
 
 /*
@@ -254,14 +254,14 @@ Path_T Dir_getPath(Dir_T oDDir) {
    return oDDir->oPPath;
 }
 
-boolean Dir_hasFileChild(Dir_T oDParent, Path_T oPPath, size_t *pulChildID) {
+boolean Dir_hasDirChild(Dir_T oDParent, Path_T oPPath, size_t *pulChildID) {
    assert(oDParent != NULL);
    assert(oPPath != NULL);
    assert(pulChildID != NULL);
 
-   return DynArray_bsearch(oDParent->oDFileChildren,
+   return DynArray_bsearch(oDParent->oDDirChildren,
             (char*) Path_getPathname(oPPath), pulChildID,
-            (int (*)(const void*, const void*)) File_compareString);
+            (int (*)(const void*, const void*)) Dir_compare);
 }
 
 boolean Dir_hasFileChild(Dir_T oDParent, Path_T oPPath,
