@@ -321,11 +321,23 @@ static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
 int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
     int iStatus;
     size_t ulIdx;
+    size_t ulDepth;
     File_T oFFile;
+    Path_T oPPath;
     Path_T oPPrevDir;
     Dir_T oDEnd;
 
-    iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
+    assert(pcPath != NULL);
+   /* validate pcPath and generate a Path_T for it */
+   if(!bIsInitialized)
+     return INITIALIZATION_ERROR;
+
+   iStatus = Path_new(pcPath, &oPPath);
+   if(iStatus != SUCCESS)
+      return iStatus;
+
+    ulDepth = Path_getDepth(oPPath);
+    iStatus = Path_prefix(oPPath, ulDepth-1, oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
