@@ -366,25 +366,25 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
    /* now, insert file if not already in tree */
    if (iStatus == ALREADY_IN_TREE) {
      if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx) || Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
-       Path_free(oPPath);
+       /*Path_free(oPPath);
        Path_free(oPPrevDir);
-       Dir_free(oDEnd);
+       Dir_free(oDEnd);*/
        return ALREADY_IN_TREE;
      }
    }
    iStatus = File_new(oPPath, oDEnd, pvContents, ulLength, &oFFile);
    if (iStatus != SUCCESS) {
-      Path_free(oPPath);
+      /*Path_free(oPPath);
       Path_free(oPPrevDir);
       Dir_free(oDEnd);
-      File_free(oFFile);
+      File_free(oFFile);*/
       return iStatus;
    }
    Dir_hasFileChild(oDEnd, oPPath, &ulIdx);
    iStatus = Dir_addFileChild(oDEnd, oFFile, ulIdx);
    if (iStatus != SUCCESS) {
-      Dir_free(oDEnd);
-      File_free(oFFile);
+      /*Dir_free(oDEnd);
+      File_free(oFFile);*/
    }
    return iStatus;
 }
