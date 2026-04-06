@@ -359,6 +359,10 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
    if (iStatus != SUCCESS && iStatus != ALREADY_IN_TREE) {
       return iStatus;
    }
+   iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
+   if (iStatus != SUCCESS) {
+      return iStatus;
+   }
    FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
    if (iStatus == ALREADY_IN_TREE) {
      if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx) || Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
