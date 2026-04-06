@@ -212,7 +212,7 @@ size_t Dir_free(Dir_T oDDir) {
    if(oDDir->oDParent != NULL) {
       if(DynArray_bsearch(
             oDDir->oDParent->oDDirChildren,
-            oDDir, &ulIndex,
+            Dir_getPath(oDDir), &ulIndex,
             (int (*)(const void *, const void *)) Dir_compare)
         )
          (void) DynArray_removeAt(oDDir->oDParent->oDDirChildren,
