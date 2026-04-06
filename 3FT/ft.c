@@ -218,13 +218,13 @@ static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
          return iStatus;
       }
       /* check if the path already exists as a file */
-      /*if (oDCurr != NULL && Dir_hasFileChild(oDCurr, oPPrefix, &ulIndex)) {
+      if (FT_containsFile(Path_getPathname(oPPrefix))) {
         Path_free(oPPath);
         Path_free(oPPrefix);
         if(oDFirstNew != NULL)
             (void) Dir_free(oDFirstNew);
         return NOT_A_DIRECTORY;
-	}*/
+	}
 
       /* insert the new node for this level */
       iStatus = Dir_new(oPPrefix, oDCurr, &oDNewDir);
