@@ -459,7 +459,7 @@ int FT_rmFile(const char *pcPath) {
     if (!Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
         return NO_SUCH_PATH;
     }
-    ulCount -= Dir_freeFile(oDEnd, ulIdx); 
+    Dir_freeFile(oDEnd, ulIdx); 
     return SUCCESS;
 }
 
