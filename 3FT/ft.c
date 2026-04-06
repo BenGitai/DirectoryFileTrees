@@ -197,9 +197,9 @@ static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
       if(ulIndex == ulDepth+1 && !Path_comparePath(oPPath,
                                        Dir_getPath(oDCurr))) {
          Path_free(oPPath);
-	 if (oDEnd != NULL) {
-	   *oDEnd = oDCurr;
-	 }
+	     if (oDEnd != NULL) {
+	        *oDEnd = oDCurr;
+	     }
          return ALREADY_IN_TREE;
       }
    }
@@ -216,6 +216,14 @@ static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
          if(oDFirstNew != NULL)
             (void) Dir_free(oDFirstNew);
          return iStatus;
+      }
+      /* check if the path already exists as a file */
+      if (Dir_hasFileChild(oDCurr, oPPrefix, &ulIndex)) {
+        Path_free(oPPath);
+        Path_free(oPPrefix);
+        if(oDFirstNew != NULL)
+            (void) Dir_free(oDFirstNew);
+        return NOT_A_DIRECTORY;
       }
 
       /* insert the new node for this level */
