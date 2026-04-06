@@ -105,7 +105,7 @@ Dir_T Dir_getParent(Dir_T oDDir);
   Returns <0, 0, or >0 if oDFirst is "less than", "equal to", or
   "greater than" oDSecond, respectively.
 */
-int Dir_compare(Dir_T oDFirst, Dir_T oDSecond);
+int Dir_compare(Dir_T oDFirst, Path_T oDSecond);
 
 /*
   Returns a string representation for oDDir, or NULL if

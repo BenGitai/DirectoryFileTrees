@@ -10,7 +10,7 @@
 #include "dirFT.h"
 #include "fileFT.h"
 #include "path.h"
-
+#include <stdio.h>
 /* A directory node in a FT */
 struct dir {
    /* the object corresponding to the directory's absolute path */
@@ -258,9 +258,9 @@ boolean Dir_hasDirChild(Dir_T oDParent, Path_T oPPath, size_t *pulChildID) {
    assert(oDParent != NULL);
    assert(oPPath != NULL);
    assert(pulChildID != NULL);
-
+   
    return DynArray_bsearch(oDParent->oDDirChildren,
-            (char*) Path_getPathname(oPPath), pulChildID,
+            oPPath, pulChildID,
             (int (*)(const void*, const void*)) Dir_compare);
 }
 
@@ -269,10 +269,10 @@ boolean Dir_hasFileChild(Dir_T oDParent, Path_T oPPath,
    assert(oDParent != NULL);
    assert(oPPath != NULL);
    assert(pulChildID != NULL);
-
+   
    /* *pulChildID is the index into oDParent->oDFileChildren */
    return DynArray_bsearch(oDParent->oDFileChildren,
-            (char*) Path_getPathname(oPPath), pulChildID,
+            oPPath, pulChildID,
             (int (*)(const void*,const void*)) File_compare);
 }
 
@@ -328,11 +328,11 @@ Dir_T Dir_getParent(Dir_T oDDir) {
    return oDDir->oDParent;
 }
 
-int Dir_compare(Dir_T oDFirst, Dir_T oDSecond) {
+int Dir_compare(Dir_T oDFirst, Path_T oDSecond) {
    assert(oDFirst != NULL);
    assert(oDSecond != NULL);
 
-   return Path_comparePath(oDFirst->oPPath, oDSecond->oPPath);
+   return Path_comparePath(oDFirst->oPPath, oDSecond);
 }
 
 char *Dir_toString(Dir_T oDDir) {

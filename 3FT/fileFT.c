@@ -108,11 +108,11 @@ int File_getContentSize(File_T oFFile) {
   Returns <0, 0, or >0 if oFFirst is "less than", "equal to", or
   "greater than" oFSecoFd, respectively.
 */
-int File_compare(File_T oFFirst, File_T oFSecond) {
+int File_compare(File_T oFFirst, Path_T oFSecond) {
   assert(oFFirst != NULL);
   assert(oFSecond != NULL);
 
-  return Path_comparePath(oFFirst->oPPath, oFSecond->oPPath);
+  return Path_comparePath(oFFirst->oPPath, oFSecond);
 }
 
 /*
