@@ -440,17 +440,23 @@ boolean FT_containsFile(const char *pcPath) {
 int FT_rmFile(const char *pcPath) {
     int iStatus;
     size_t ulIdx;
+    Path_T oPPath;
     Path_T oPPrevDir;
     Dir_T oDEnd;
+
+    iStatus = Path_new(pcPath, &oPPath);
+    if (iStatus != SUCCESS) {
+        return iStatus;
+    }
 
     iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
-    if (Dir_hasDirChild(oDEnd, oPPrevDir, &ulIdx)) {
+    if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
         return NOT_A_FILE;
     }
-    if (!Dir_hasFileChild(oDEnd, oPPrevDir, &ulIdx)) {
+    if (!Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
         return NO_SUCH_PATH;
     }
     ulCount -= Dir_freeFile(oDEnd, ulIdx); 
