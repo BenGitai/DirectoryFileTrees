@@ -165,13 +165,25 @@ static int FT_findDir(const char *pcPath, Dir_T *poDResult) {
    return SUCCESS;
 }
 
-/* insert directory with path oPPath */
-static int FT_insertPath(Path_T oPPath) {
+
+
+int FT_insertDir(const char *pcPath) {
    int iStatus;
+   Path_T oPPath = NULL;
    Dir_T oDFirstNew = NULL;
    Dir_T oDCurr = NULL;
    size_t ulDepth, ulIndex;
    size_t ulNewDirs = 0;
+
+   assert(pcPath != NULL);
+
+   /* validate pcPath and generate a Path_T for it */
+   if(!bIsInitialized)
+      return INITIALIZATION_ERROR;
+
+   iStatus = Path_new(pcPath, &oPPath);
+   if(iStatus != SUCCESS)
+      return iStatus;
 
    /* find the closest ancestor of oPPath already in the tree */
    iStatus= FT_traversePath(oPPath, &oDCurr);
@@ -249,25 +261,6 @@ static int FT_insertPath(Path_T oPPath) {
       oDRoot = oDFirstNew;
    ulCount += ulNewDirs;
    return SUCCESS;
-}
-/*--------------------------------------------------------------------*/
-
-
-int FT_insertDir(const char *pcPath) {
-   int iStatus;
-   Path_T oPPath = NULL;
-
-   assert(pcPath != NULL);
-
-   /* validate pcPath and generate a Path_T for it */
-   if(!bIsInitialized)
-      return INITIALIZATION_ERROR;
-
-   iStatus = Path_new(pcPath, &oPPath);
-   if(iStatus != SUCCESS)
-      return iStatus;
-
-    return FT_insertPath(oPPath);
 }
 
 boolean FT_containsDir(const char *pcPath) {
@@ -350,17 +343,12 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
       return CONFLICTING_PATH;
    }
 
-   ulDepth = Path_getDepth(oPPath);
    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
    if (iStatus != SUCCESS) {
       return iStatus;
    }
-   iStatus = FT_insertPath(oPPrevDir);
+   iStatus = FT_insertDir(Path_getPathname(oPPrevDir));
    if (iStatus != SUCCESS && iStatus != ALREADY_IN_TREE) {
-      return iStatus;
-   }
-   iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
-   if (iStatus != SUCCESS) {
       return iStatus;
    }
    FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
