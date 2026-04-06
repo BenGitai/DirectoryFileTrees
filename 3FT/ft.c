@@ -288,8 +288,9 @@ int FT_rmDir(const char *pcPath) {
 
    iStatus = FT_findDir(pcPath, &oDFound);
 
-   if(iStatus != SUCCESS)
-       return iStatus;
+   if(iStatus != SUCCESS) {
+    return iStatus;
+   }
 
    ulCount -= Dir_free(oDFound);
    if(ulCount == 0)
@@ -382,6 +383,11 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
    }
    Dir_hasFileChild(oDEnd, oPPath, &ulIdx);
    iStatus = Dir_addFileChild(oDEnd, oFFile, ulIdx);
+   if (iStatus == SUCCESS) {
+      ulCount++; 
+   } else {
+      File_free(oFFile); 
+   }
    if (iStatus != SUCCESS) {
       /*Dir_free(oDEnd);
       File_free(oFFile);*/
