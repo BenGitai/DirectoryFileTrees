@@ -165,7 +165,8 @@ static int FT_findDir(const char *pcPath, Dir_T *poDResult) {
    return SUCCESS;
 }
 
-static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
+/* insert directory with path oPPath */
+static int FT_insertPath(Path_T oPPath) {
    int iStatus;
    Dir_T oDFirstNew = NULL;
    Dir_T oDCurr = NULL;
@@ -197,9 +198,6 @@ static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
       if(ulIndex == ulDepth+1 && !Path_comparePath(oPPath,
                                        Dir_getPath(oDCurr))) {
          Path_free(oPPath);
-	     if (oDEnd != NULL) {
-	        *oDEnd = oDCurr;
-	     }
          return ALREADY_IN_TREE;
       }
    }
@@ -250,9 +248,6 @@ static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
    if(oDRoot == NULL)
       oDRoot = oDFirstNew;
    ulCount += ulNewDirs;
-   if (oDEnd != NULL) {
-        *oDEnd = oDCurr;
-   }
    return SUCCESS;
 }
 /*--------------------------------------------------------------------*/
@@ -272,7 +267,7 @@ int FT_insertDir(const char *pcPath) {
    if(iStatus != SUCCESS)
       return iStatus;
 
-    return FT_insertPath(oPPath, NULL);
+    return FT_insertPath(oPPath);
 }
 
 boolean FT_containsDir(const char *pcPath) {
@@ -360,14 +355,15 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
    if (iStatus != SUCCESS) {
       return iStatus;
    }
-   iStatus = FT_insertPath(oPPrevDir, &oDEnd);
+   iStatus = FT_insertPath(oPPrevDir);
+   if (iStatus != SUCCESS && iStatus != ALREADY_IN_TREE) {
+      return iStatus;
+   }
+   FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
    if (iStatus == ALREADY_IN_TREE) {
      if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx) || Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
        return ALREADY_IN_TREE;
      }
-   }
-   if (iStatus != SUCCESS && iStatus != ALREADY_IN_TREE) {
-      return iStatus;
    }
    /* now, insert file if not already in tree */
    if (Dir_hasDirChild(oDEnd, oPPrevDir, &ulIdx)) {
