@@ -276,6 +276,7 @@ boolean FT_containsDir(const char *pcPath) {
    assert(pcPath != NULL);
 
    iStatus = FT_findDir(pcPath, &oDFound);
+   
    return (boolean) (iStatus == SUCCESS);
 }
 
@@ -379,6 +380,7 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
       File_free(oFFile);
       return iStatus;
    }
+   Dir_hasFileChild(oDEnd, oPPath, &ulIdx)
    iStatus = Dir_addFileChild(oDEnd, oFFile, ulIdx);
    if (iStatus != SUCCESS) {
       Dir_free(oDEnd);
