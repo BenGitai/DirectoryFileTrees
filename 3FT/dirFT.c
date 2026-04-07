@@ -226,6 +226,7 @@ size_t Dir_free(Dir_T oDDir) {
       oF = DynArray_removeAt(oDDir->oDFileChildren, 0);
       File_free(oF);
    }
+   DynArray_free(oDDir->oDFileChildren);
 
    /* recursively remove directory children */
    while(DynArray_getLength(oDDir->oDDirChildren) > 0) {
