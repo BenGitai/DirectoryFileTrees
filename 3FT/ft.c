@@ -371,9 +371,7 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
    /* now, insert file if not already in tree */
    if (iStatus == ALREADY_IN_TREE) {
      if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx) || Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
-       /*Path_free(oPPath);
-       Path_free(oPPrevDir);
-       Dir_free(oDEnd);*/
+       Path_free(oPPath);
        return ALREADY_IN_TREE;
      }
    }
