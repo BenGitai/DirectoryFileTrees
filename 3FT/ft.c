@@ -458,13 +458,16 @@ int FT_rmFile(const char *pcPath) {
     }
     if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
          Path_free(oPPath);
+         Path_free(oPPrevDir);
         return NOT_A_FILE;
     }
     if (!Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
          Path_free(oPPath);
+         Path_free(oPPrevDir);
         return NO_SUCH_PATH;
     }
     Path_free(oPPath);
+    Path_free(oPPrevDir);
     Dir_freeFile(oDEnd, ulIdx); 
     return SUCCESS;
 }
