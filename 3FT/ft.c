@@ -464,6 +464,7 @@ int FT_rmFile(const char *pcPath) {
          Path_free(oPPath);
         return NO_SUCH_PATH;
     }
+    Path_free(oPPath);
     Dir_freeFile(oDEnd, ulIdx); 
     return SUCCESS;
 }
