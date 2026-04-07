@@ -516,18 +516,23 @@ int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
     int iStatus;
     size_t ulIdx;
     File_T oFFile;
+    Path_T oPPath;
     Path_T oPPrevDir;
     Dir_T oDEnd;
 
+    iStatus = Path_new(pcPath, &oPPath);
+    if (iStatus != SUCCESS) {
+      return iStatus;
+    }
     iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
-    if (Dir_hasDirChild(oDEnd, oPPrevDir, &ulIdx)) {
+    if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
         *pbIsFile = FALSE;
         return SUCCESS;   
     }
-    if (Dir_hasFileChild(oDEnd, oPPrevDir, &ulIdx)) {
+    if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
         Dir_getFileChild(oDEnd, ulIdx, &oFFile);
         *pbIsFile = TRUE;
         *pulSize = File_getContentSize(oFFile);
