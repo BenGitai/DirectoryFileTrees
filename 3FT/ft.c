@@ -488,15 +488,18 @@ void *FT_getFileContents(const char *pcPath) {
 
     iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
+        Path_free(oPPrevDir);
         return NULL;
     }
 
     Dir_hasFileChild(oDEnd, oPPrevDir, &ulFileIdx);
     iStatus = Dir_getFileChild(oDEnd, ulFileIdx, &oFFile);
     if (iStatus != SUCCESS) {
+         Path_free(oPPrevDir);
         return NULL;
     }
     result =  File_getContents(oFFile);
+    Path_free(oPPrevDir);
     return result;
 }
 
@@ -511,15 +514,18 @@ void *FT_replaceFileContents(const char *pcPath, void *pvNewContents,
 
     iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
+      Path_free(oPPrevDir);
         return NULL;
     }
 
     Dir_hasFileChild(oDEnd, oPPrevDir, &ulFileIdx);
     iStatus = Dir_getFileChild(oDEnd, ulFileIdx, &oFFile);
     if (iStatus != SUCCESS) {
+      Path_free(oPPrevDir);
         return NULL;
     }
     result = File_replaceContents(oFFile, pvNewContents, ulNewLength);
+    Path_free(oPPrevDir);
     return result;
 }
 
