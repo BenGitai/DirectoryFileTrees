@@ -378,6 +378,7 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
    iStatus = File_new(oPPath, oDEnd, pvContents, ulLength, &oFFile);
    if (iStatus != SUCCESS) {
       Path_free(oPPath);
+      File_free(oFFile);
       return iStatus;
    }
    Dir_hasFileChild(oDEnd, oPPath, &ulIdx);
