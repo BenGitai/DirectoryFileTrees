@@ -185,6 +185,7 @@ int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poDResult) {
       iStatus = Dir_addDirChild(oDParent, psNew, ulIndex);
       if(iStatus != SUCCESS) {
          Path_free(psNew->oPPath);
+         DynArray_free(psNew->oDDirChildren);
          free(psNew);
          *poDResult = NULL;
          return iStatus;
