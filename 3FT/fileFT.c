@@ -59,6 +59,7 @@ int File_new(Path_T oPPath, Dir_T oDParent, void *contents, size_t ulLength, Fil
 */
 size_t File_free(File_T oFFile) {
   assert(oFFile != NULL);
+  Path_free(oFFile->oPPath);
   free(oFFile);
   return 1;
 }
