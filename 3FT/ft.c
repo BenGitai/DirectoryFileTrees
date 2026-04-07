@@ -387,6 +387,7 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
       Path_free(oPPath);
       return iStatus;
    }
+   Path_free(oPPath);
    return iStatus;
 }
 
