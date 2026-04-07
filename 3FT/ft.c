@@ -321,9 +321,11 @@ static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
     ulDepth = Path_getDepth(oPPath);
     iStatus = Path_prefix(oPPath, ulDepth-1, oPPrevDir);
     if (iStatus != SUCCESS) {
+         Path_free(oPPath);
         return iStatus;
     }
     iStatus = FT_findDir(Path_getPathname(*oPPrevDir), oDDir);
+    Path_free(oPPath);
     return iStatus;
 }
 
