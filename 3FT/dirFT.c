@@ -186,6 +186,7 @@ int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poDResult) {
       if(iStatus != SUCCESS) {
          Path_free(psNew->oPPath);
          DynArray_free(psNew->oDDirChildren);
+         DynArray_free(psNew->oDFileChildren);
          free(psNew);
          *poDResult = NULL;
          return iStatus;
