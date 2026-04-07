@@ -222,7 +222,6 @@ size_t Dir_free(Dir_T oDDir) {
    /* remove all file children */
    while(DynArray_getLength(oDDir->oDFileChildren) > 0) {
       oF = DynArray_removeAt(oDDir->oDFileChildren, 0);
-      ulCount += File_free(oF);
    }
 
    /* recursively remove directory children */
