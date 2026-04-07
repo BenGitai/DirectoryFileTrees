@@ -37,6 +37,7 @@ static int File_compareString(const File_T oFFirst,
 
 int File_new(Path_T oPPath, Dir_T oDParent, void *contents, size_t ulLength, File_T *oFFile) {
   File_T result;
+  Path_T oPNewPath;
   assert(oPPath != NULL);
   assert(oDParent != NULL);
   
@@ -44,7 +45,14 @@ int File_new(Path_T oPPath, Dir_T oDParent, void *contents, size_t ulLength, Fil
   if (result == NULL) {
     return MEMORY_ERROR;
   }
-  result->oPPath = oPPath;
+
+  /* set the new node's path */
+  iStatus = Path_dup(oPPath, &oPNewPath);
+  if(iStatus != SUCCESS) {
+      free(result);
+      return iStatus;
+   }
+  psNew->oPPath = oPNewPath;
   result->oDParent = oDParent;
   result->contents = contents;
   result->ulLength = ulLength;
