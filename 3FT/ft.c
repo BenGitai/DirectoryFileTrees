@@ -292,8 +292,12 @@ int FT_rmDir(const char *pcPath) {
        return iStatus;
 
    ulCount -= Dir_free(oDFound);
-   if(ulCount == 0)
+   if(ulCount == 0) {
       oDRoot = NULL;
+   }
+   if (oDRoot == NULL) {
+       ulCount = 0;
+   }
 
    return SUCCESS;
 }
