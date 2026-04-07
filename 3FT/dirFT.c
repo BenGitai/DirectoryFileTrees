@@ -24,20 +24,6 @@ struct dir {
 };
 
 /*
-  Compares the string representation of oNfirst with a string
-  pcSecond representing a node's path.
-  Returns <0, 0, or >0 if oNFirst is "less than", "equal to", or
-  "greater than" pcSecond, respectively.
-*/
-static int File_compareString(const File_T oFFirst,
-                                 const char *pcSecond) {
-   assert(oFFirst != NULL);
-   assert(pcSecond != NULL);
-
-   return Path_compareString(File_getPath(oFFirst), pcSecond);
-}
-
-/*
   Links new child oNChild into oDParent's children array at index
   ulIndex. Returns SUCCESS if the new child was added successfully,
   or  MEMORY_ERROR if allocation fails adding oNChild to the array.
@@ -53,6 +39,10 @@ static int Dir_addDirChild(Dir_T oDParent, Dir_T oDChild,
       return MEMORY_ERROR;
 }
 
+/* Adds a file child to the directory 
+* Takes a directory node oDParent and a file node oFChild as arguments
+* Returns SUCCESS if the new child was added successfully, 
+* or  MEMORY_ERROR if allocation fails adding oFChild to the array. */
 int Dir_addFileChild(Dir_T oDParent, File_T oFChild,
                          size_t ulIndex) {
    assert(oDParent != NULL);
@@ -63,21 +53,6 @@ int Dir_addFileChild(Dir_T oDParent, File_T oFChild,
    else
       return MEMORY_ERROR;
 }
-
-/*
-  Compares the string representation of oNfirst with a string
-  pcSecond representing a node's path.
-  Returns <0, 0, or >0 if oNFirst is "less than", "equal to", or
-  "greater than" pcSecond, respectively.
-*/
-static int Dir_compareString(const Dir_T oDFirst,
-                                 const char *pcSecond) {
-   assert(oDFirst != NULL);
-   assert(pcSecond != NULL);
-
-   return Path_compareString(oDFirst->oPPath, pcSecond);
-}
-
 
 /*
   Creates a new node with path oPPath and parent oDParent.  Returns an
@@ -244,6 +219,7 @@ size_t Dir_free(Dir_T oDDir) {
    return ulCount;
 }
 
+/* Removes a file child from the directory and frees its memory */
 size_t Dir_freeFile(Dir_T oDDir, size_t ulIdx) {
    File_T oFFile;
    oFFile = DynArray_removeAt(oDDir->oDFileChildren, ulIdx);
@@ -251,12 +227,14 @@ size_t Dir_freeFile(Dir_T oDDir, size_t ulIdx) {
    return 1;
 }
 
+/* Returns the path object representing oDDir's absolute path. */
 Path_T Dir_getPath(Dir_T oDDir) {
    assert(oDDir != NULL);
 
    return oDDir->oPPath;
 }
 
+/* Returns the parent Dir of oDDir. Returns NULL if oDDir is the root and thus has no parent. */
 boolean Dir_hasDirChild(Dir_T oDParent, Path_T oPPath, size_t *pulChildID) {
    assert(oDParent != NULL);
    assert(oPPath != NULL);
@@ -267,6 +245,7 @@ boolean Dir_hasDirChild(Dir_T oDParent, Path_T oPPath, size_t *pulChildID) {
             (int (*)(const void*, const void*)) Dir_compare);
 }
 
+/* Returns true if the directory has a file child with the specified path, false otherwise. */
 boolean Dir_hasFileChild(Dir_T oDParent, Path_T oPPath,
                          size_t *pulChildID) {
    assert(oDParent != NULL);
@@ -279,18 +258,21 @@ boolean Dir_hasFileChild(Dir_T oDParent, Path_T oPPath,
             (int (*)(const void*,const void*)) File_compare);
 }
 
+/* Returns the number of directory children of oDParent. */
 size_t Dir_getNumDirChildren(Dir_T oDParent) {
    assert(oDParent != NULL);
 
    return DynArray_getLength(oDParent->oDDirChildren);
 }
 
+/* Returns the number of file children of oDParent. */
 size_t Dir_getNumFileChildren(Dir_T oDParent) {
    assert(oDParent != NULL);
 
    return DynArray_getLength(oDParent->oDFileChildren);
 }
 
+/* Returns the directory child at the specified index. */
 int  Dir_getDirChild(Dir_T oDParent, size_t ulChildID,
                    Dir_T *poNResult) {
 
@@ -308,6 +290,7 @@ int  Dir_getDirChild(Dir_T oDParent, size_t ulChildID,
    }
 }
 
+/* Returns the file child at the specified index. */
 int  Dir_getFileChild(Dir_T oDParent, size_t ulChildID,
                    File_T *poNResult) {
 
@@ -325,12 +308,14 @@ int  Dir_getFileChild(Dir_T oDParent, size_t ulChildID,
    }
 }
 
+/* Returns the parent Dir of oDDir. Returns NULL if oDDir is the root and thus has no parent. */
 Dir_T Dir_getParent(Dir_T oDDir) {
    assert(oDDir != NULL);
 
    return oDDir->oDParent;
 }
 
+/* Compares oDFirst and oDSecond lexicographically based on their paths. */
 int Dir_compare(Dir_T oDFirst, Path_T oDSecond) {
    assert(oDFirst != NULL);
    assert(oDSecond != NULL);
@@ -338,6 +323,7 @@ int Dir_compare(Dir_T oDFirst, Path_T oDSecond) {
    return Path_comparePath(oDFirst->oPPath, oDSecond);
 }
 
+/* Returns a string representation for oDDir, or NULL if there is an allocation error. */
 char *Dir_toString(Dir_T oDDir) {
    char *copyPath;
 

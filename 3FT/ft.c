@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------*/
 /* ft.c                                                               */
-/* Author: Jeremy Arking                                       */
+/* Author: Jeremy Arking & Benjamin Gitai                             */
 /*--------------------------------------------------------------------*/
 
 #include <stddef.h>
@@ -171,8 +171,8 @@ static int FT_findDir(const char *pcPath, Dir_T *poDResult) {
    return SUCCESS;
 }
 
-
-
+/* Inserts a new directory node with the specified path into the FT. 
+* Return status */
 int FT_insertDir(const char *pcPath) {
    int iStatus;
    Path_T oPPath = NULL;
@@ -269,6 +269,7 @@ int FT_insertDir(const char *pcPath) {
    return SUCCESS;
 }
 
+/* Returns true if the FT contains a directory with the specified path, false otherwise. */
 boolean FT_containsDir(const char *pcPath) {
    int iStatus;
    Dir_T oDFound = NULL;
@@ -280,6 +281,7 @@ boolean FT_containsDir(const char *pcPath) {
    return (boolean) (iStatus == SUCCESS);
 }
 
+/* Removes a directory node with the specified path from the FT. */
 int FT_rmDir(const char *pcPath) {
    int iStatus;
    Dir_T oDFound = NULL;
@@ -329,7 +331,8 @@ static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
     return iStatus;
 }
 
-
+/* Inserts a new file node with the specified path into the FT. 
+* Returns a status code indicating success or failure. */
 int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
     int iStatus;
     size_t ulIdx;
@@ -397,6 +400,7 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
    return iStatus;
 }
 
+/* Returns true if the FT contains a file with the specified path, false otherwise. */
 boolean FT_containsFile(const char *pcPath) {
    Path_T oPPath = NULL;
    Dir_T oDFound = NULL;
@@ -445,6 +449,8 @@ boolean FT_containsFile(const char *pcPath) {
    return result;
 }
 
+/* Removes a file node with the specified path from the FT. 
+* Returns a status code indicating success or failure. */
 int FT_rmFile(const char *pcPath) {
     int iStatus;
     size_t ulIdx;
@@ -478,6 +484,7 @@ int FT_rmFile(const char *pcPath) {
     return SUCCESS;
 }
 
+/* Returns the contents of the file with the specified path, or NULL if no such file exists. */
 void *FT_getFileContents(const char *pcPath) {
     int iStatus;
     size_t ulFileIdx;
@@ -503,6 +510,8 @@ void *FT_getFileContents(const char *pcPath) {
     return result;
 }
 
+/* Replaces the contents of the file with the specified path. 
+* Returns a pointer to the old contents, or NULL if no such file exists. */
 void *FT_replaceFileContents(const char *pcPath, void *pvNewContents,
                              size_t ulNewLength) {
     int iStatus;
@@ -529,6 +538,7 @@ void *FT_replaceFileContents(const char *pcPath, void *pvNewContents,
     return result;
 }
 
+/* Returns status information about the item with the specified path. */
 int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
     int iStatus;
     size_t ulIdx;
@@ -566,6 +576,7 @@ int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
     return NO_SUCH_PATH;
 }
 
+/* Initializes the FT. Returns a status code indicating success or failure. */
 int FT_init(void) {
    if(bIsInitialized)
       return INITIALIZATION_ERROR;
@@ -577,6 +588,8 @@ int FT_init(void) {
    return SUCCESS;
 }
 
+/* Destroys the FT, freeing all allocated memory. 
+* Returns a status code indicating success or failure. */
 int FT_destroy(void) {
    if(!bIsInitialized)
       return INITIALIZATION_ERROR;
@@ -660,6 +673,7 @@ static void FT_strcatAccumulate(Dir_T oDDir, char *pcAcc) {
 }
 /*--------------------------------------------------------------------*/
 
+/* Returns a string representation of the FT, or NULL if there is an allocation error. */
 char *FT_toString(void) {
    DynArray_T nodes;
    size_t totalStrlen = 1;

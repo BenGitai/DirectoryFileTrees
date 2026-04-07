@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------*/
 /* file.c                                                             */
-/* Author: Jeremy Arking and Ben Gitai                                */
+/* Author: Jeremy Arking and Benjamin Gitai                           */
 /*--------------------------------------------------------------------*/
 #include <stdlib.h>
 #include <assert.h>
@@ -22,19 +22,14 @@ struct file {
 };
 
 /*
-  Compares the string representation of oNfirst with a string
-  pcSecond representing a node's path.
-  Returns <0, 0, or >0 if oNFirst is "less than", "equal to", or
-  "greater than" pcSecond, respectively.
+  Creates a new node with path oPPath and parent oDParent.  Returns an
+  int SUCCESS status and sets *oFFile to be the new node if
+  successful. Otherwise, sets *oFFile to NULL and returns status:
+  * MEMORY_ERROR if memory could not be allocated to complete request
+  * CONFLICTING_PATH if oDParent's path is not an ancestor of oPPath
+  * NO_SUCH_PATH if oPPath is of depth 0
+                 or oDParent's path is not oPPath's direct parent
 */
-static int File_compareString(const File_T oFFirst,
-                                 const char *pcSecond) {
-   assert(oFFirst != NULL);
-   assert(pcSecond != NULL);
-
-   return Path_compareString(oFFirst->oPPath, pcSecond);
-}
-
 int File_new(Path_T oPPath, Dir_T oDParent, void *contents, size_t ulLength, File_T *oFFile) {
   File_T result;
   Path_T oPNewPath;
