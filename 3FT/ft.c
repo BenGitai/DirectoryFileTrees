@@ -154,6 +154,12 @@ static int FT_findDir(const char *pcPath, Dir_T *poDResult) {
       return NO_SUCH_PATH;
    }
 
+   if (FT_containsFile(pcPath)) {
+    Path_free(oPPath);
+    *poDResult = NULL;
+    return NOT_A_DIRECTORY;
+   }
+
    if(Path_comparePath(Dir_getPath(oDFound), oPPath) != 0) {
       Path_free(oPPath);
       *poDResult = NULL;
@@ -165,12 +171,25 @@ static int FT_findDir(const char *pcPath, Dir_T *poDResult) {
    return SUCCESS;
 }
 
-static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
+
+
+int FT_insertDir(const char *pcPath) {
    int iStatus;
+   Path_T oPPath = NULL;
    Dir_T oDFirstNew = NULL;
    Dir_T oDCurr = NULL;
    size_t ulDepth, ulIndex;
    size_t ulNewDirs = 0;
+
+   assert(pcPath != NULL);
+
+   /* validate pcPath and generate a Path_T for it */
+   if(!bIsInitialized)
+      return INITIALIZATION_ERROR;
+
+   iStatus = Path_new(pcPath, &oPPath);
+   if(iStatus != SUCCESS)
+      return iStatus;
 
    /* find the closest ancestor of oPPath already in the tree */
    iStatus= FT_traversePath(oPPath, &oDCurr);
@@ -197,9 +216,6 @@ static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
       if(ulIndex == ulDepth+1 && !Path_comparePath(oPPath,
                                        Dir_getPath(oDCurr))) {
          Path_free(oPPath);
-	     if (oDEnd != NULL) {
-	        *oDEnd = oDCurr;
-	     }
          return ALREADY_IN_TREE;
       }
    }
@@ -250,29 +266,7 @@ static int FT_insertPath(Path_T oPPath, Dir_T *oDEnd) {
    if(oDRoot == NULL)
       oDRoot = oDFirstNew;
    ulCount += ulNewDirs;
-   if (oDEnd != NULL) {
-        *oDEnd = oDCurr;
-   }
    return SUCCESS;
-}
-/*--------------------------------------------------------------------*/
-
-
-int FT_insertDir(const char *pcPath) {
-   int iStatus;
-   Path_T oPPath = NULL;
-
-   assert(pcPath != NULL);
-
-   /* validate pcPath and generate a Path_T for it */
-   if(!bIsInitialized)
-      return INITIALIZATION_ERROR;
-
-   iStatus = Path_new(pcPath, &oPPath);
-   if(iStatus != SUCCESS)
-      return iStatus;
-
-    return FT_insertPath(oPPath, NULL);
 }
 
 boolean FT_containsDir(const char *pcPath) {
@@ -282,6 +276,7 @@ boolean FT_containsDir(const char *pcPath) {
    assert(pcPath != NULL);
 
    iStatus = FT_findDir(pcPath, &oDFound);
+   
    return (boolean) (iStatus == SUCCESS);
 }
 
@@ -355,32 +350,42 @@ int FT_insertFile(const char *pcPath, void *pvContents, size_t ulLength) {
       return CONFLICTING_PATH;
    }
 
-   ulDepth = Path_getDepth(oPPath);
    iStatus = Path_prefix(oPPath, ulDepth-1, &oPPrevDir);
    if (iStatus != SUCCESS) {
+      Path_free(oPPath);
+      Path_free(oPPrevDir);
       return iStatus;
    }
-   iStatus = FT_insertPath(oPPrevDir, &oDEnd);
+   iStatus = FT_insertDir(Path_getPathname(oPPrevDir));
+   if (iStatus != SUCCESS && iStatus != ALREADY_IN_TREE) {
+      Path_free(oPPath);
+      Path_free(oPPrevDir);
+      return iStatus;
+   }
+   FT_findDir(Path_getPathname(oPPrevDir), &oDEnd);
+   /* now, insert file if not already in tree */
    if (iStatus == ALREADY_IN_TREE) {
      if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx) || Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
+       /*Path_free(oPPath);
+       Path_free(oPPrevDir);
+       Dir_free(oDEnd);*/
        return ALREADY_IN_TREE;
      }
    }
-   if (iStatus != SUCCESS && iStatus != ALREADY_IN_TREE) {
-      return iStatus;
-   }
-   /* now, insert file if not already in tree */
-   if (Dir_hasDirChild(oDEnd, oPPrevDir, &ulIdx)) {
-      return ALREADY_IN_TREE;
-   } 
-   if (Dir_hasFileChild(oDEnd, oPPrevDir, &ulIdx)) {
-      return ALREADY_IN_TREE;
-   }
-   iStatus = File_new(oPPrevDir, oDEnd, pvContents, ulLength, &oFFile);
+   iStatus = File_new(oPPath, oDEnd, pvContents, ulLength, &oFFile);
    if (iStatus != SUCCESS) {
+      /*Path_free(oPPath);
+      Path_free(oPPrevDir);
+      Dir_free(oDEnd);
+      File_free(oFFile);*/
       return iStatus;
    }
+   Dir_hasFileChild(oDEnd, oPPath, &ulIdx);
    iStatus = Dir_addFileChild(oDEnd, oFFile, ulIdx);
+   if (iStatus != SUCCESS) {
+      /*Dir_free(oDEnd);
+      File_free(oFFile);*/
+   }
    return iStatus;
 }
 
@@ -435,20 +440,26 @@ boolean FT_containsFile(const char *pcPath) {
 int FT_rmFile(const char *pcPath) {
     int iStatus;
     size_t ulIdx;
+    Path_T oPPath;
     Path_T oPPrevDir;
     Dir_T oDEnd;
+
+    iStatus = Path_new(pcPath, &oPPath);
+    if (iStatus != SUCCESS) {
+        return iStatus;
+    }
 
     iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
         return iStatus;
     }
-    if (Dir_hasDirChild(oDEnd, oPPrevDir, &ulIdx)) {
+    if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
         return NOT_A_FILE;
     }
-    if (!Dir_hasFileChild(oDEnd, oPPrevDir, &ulIdx)) {
+    if (!Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
         return NO_SUCH_PATH;
     }
-    ulCount -= Dir_freeFile(oDEnd, ulIdx); 
+    Dir_freeFile(oDEnd, ulIdx); 
     return SUCCESS;
 }
 
