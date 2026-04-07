@@ -451,12 +451,15 @@ int FT_rmFile(const char *pcPath) {
 
     iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
+         Path_free(oPPath);
         return iStatus;
     }
     if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
+         Path_free(oPPath);
         return NOT_A_FILE;
     }
     if (!Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
+         Path_free(oPPath);
         return NO_SUCH_PATH;
     }
     Dir_freeFile(oDEnd, ulIdx); 
