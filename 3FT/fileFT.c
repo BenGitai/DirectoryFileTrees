@@ -38,6 +38,7 @@ static int File_compareString(const File_T oFFirst,
 int File_new(Path_T oPPath, Dir_T oDParent, void *contents, size_t ulLength, File_T *oFFile) {
   File_T result;
   Path_T oPNewPath;
+  int iStatus;
   assert(oPPath != NULL);
   assert(oDParent != NULL);
   
@@ -52,7 +53,7 @@ int File_new(Path_T oPPath, Dir_T oDParent, void *contents, size_t ulLength, Fil
       free(result);
       return iStatus;
    }
-  psNew->oPPath = oPNewPath;
+  result->oPPath = oPNewPath;
   result->oDParent = oDParent;
   result->contents = contents;
   result->ulLength = ulLength;
