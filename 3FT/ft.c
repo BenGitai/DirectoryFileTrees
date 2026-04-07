@@ -544,11 +544,13 @@ int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
     iStatus = FT_getPrevDir(pcPath, &oDEnd, &oPPrevDir);
     if (iStatus != SUCCESS) {
          Path_free(oPPath);
+         Path_free(oPPrevDir);
         return iStatus;
     }
     if (Dir_hasDirChild(oDEnd, oPPath, &ulIdx)) {
         *pbIsFile = FALSE;
         Path_free(oPPath);
+        Path_free(oPPrevDir);
         return SUCCESS;   
     }
     if (Dir_hasFileChild(oDEnd, oPPath, &ulIdx)) {
@@ -556,9 +558,11 @@ int FT_stat(const char *pcPath, boolean *pbIsFile, size_t *pulSize) {
         *pbIsFile = TRUE;
         *pulSize = File_getContentSize(oFFile);
         Path_free(oPPath);
+        Path_free(oPPrevDir);
         return SUCCESS;
     } 
     Path_free(oPPath);
+    Path_free(oPPrevDir);
     return NO_SUCH_PATH;
 }
 
