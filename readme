@@ -17,7 +17,7 @@ information given in the "Policies" web page (also available on armlab
 in the file ~cos217/AuthorizedSourcesList ) to this section of the
 readme file, and edit it as appropriate.
 
-
+COS 217 Website
 
 ------------------------------------------------------------------------
 Student 2: What authorized sources of information did you use to
@@ -40,7 +40,7 @@ nature of the interaction, may additionally require the interaction
 being reported to the Committee on Discipline. Write "None" if you used
 no unauthorized sources of information.
 
-
+None
 
 ------------------------------------------------------------------------
 Student 2: What unauthorized sources of information did you use to
@@ -64,7 +64,7 @@ guide, enter your name in the space below the following affirmation:
 This paper represents my own work in accordance with University
 regulations.
 
-
+/s/Benjamin Gitai
 
 ------------------------------------------------------------------------
 Student 2: In fulfillment of the requirement from section 2.4.3 of the
@@ -89,7 +89,7 @@ not discussed in any handouts.
 Student 1: What is your assessment of the assignment? Was it helpful?
 Was it fun?
 
-
+I thought it was fine, a bit tedious at the end.
 
 ------------------------------------------------------------------------
 Student 2: What is your assessment of the assignment? Was it helpful?
@@ -102,7 +102,10 @@ Was it fun?
 will help your grader to grade it in the most favorable light? In
 particular, what bugs are in your submission?
 
-
+When running the make file there are warnings about type
+mismatches between Path_T and void* but they are just in
+writing as the types do actually aline 
+(void* treated as Path_t in those functions)
 
 ------------------------------------------------------------------------
 What warnings does splint generate for Part 2's checker, and what are
@@ -110,7 +113,20 @@ your disagreements with them? Copy the splint warnings here, and
 express your disagreement after each warning. If there are no
 warnings, then write "None."
 
+checkerDT.c: (in function checkerDT_Children_isValid)
+checkerDT.c:23:8: Variable oNChildCur used before definition
+  An rvalue is used that may not be initialized to a value on some execution
+  path. (Use -usedef to inhibit warning)
+checkerDT.c:30:11: Variable oNChildNext used before definition
+(path.h, nodeDT.h, dynarray.h comments)
+checkerDT.h:17:9: Function exported but not used outside checkerDT:
+                     CheckerDT_Node_isValid
+  A declaration is exported, but not used outside this module. Declaration can
+  use static qualifier. (Use -exportlocal to inhibit warning)
+   checkerDT.c:96:1: Definition of CheckerDT_Node_isValid
 
+In the first bit it will be defined guarenteed through the function called
+For the second part it is called in dtGood
 
 ------------------------------------------------------------------------
 What warnings does critTer generate on checkerDT.c, and what are your
@@ -118,7 +134,7 @@ disagreements with them? Copy the critTer warnings here, and express
 your disagreement after each warning. If there are no warnings, then
 write "None."
 
-
+None
 
 ------------------------------------------------------------------------
 What warnings does splint generate on your Part 3 code, and what are
@@ -126,7 +142,68 @@ your disagreements with them? Copy the splint warnings here, and
 express your disagreement after each warning. If there are no
 warnings, then write "None."
 
+ft.c: (in function FT_traversePath)
+ft.c:95:44: Variable ulChildID used before definition
+  An rvalue is used that may not be initialized to a value on some execution
+  path. (Use -usedef to inhibit warning)
+ft.c: (in function FT_getPrevDir)
+ft.c:326:29: Variable oPPath used before definition
+ft.c: (in function FT_insertFile)
+ft.c:355:17: Variable oPPath used before definition
+ft.c:360:28: Variable oPPath used before definition
+ft.c:369:17: Variable oPPrevDir used before definition
+ft.c:372:44: Variable oPPrevDir used before definition
+ft.c:381:27: Variable oDEnd used before definition
+ft.c:387:31: Variable oDEnd used before definition
+ft.c:391:17: Variable oFFile used before definition
+ft.c:391:7: Return value (type size_t) ignored: File_free(oFFile)
+  Result returned by function call is not used. If this is intended, can cast
+  result to (void) to eliminate message. (Use -retvalother to inhibit warning)
+ft.c:394:4: Return value (type boolean) ignored: Dir_hasFileChild...
+ft.c:395:38: Variable oFFile used before definition
+ft.c:395:46: Variable ulIdx used before definition
+ft.c: (in function FT_rmFile)
+ft.c:471:20: Variable oPPath used before definition
+ft.c:474:25: Variable oDEnd used before definition
+ft.c:474:32: Variable oPPath used before definition
+ft.c:476:20: Variable oPPrevDir used before definition
+ft.c:481:20: Variable oPPrevDir used before definition
+ft.c:485:15: Variable oPPrevDir used before definition
+ft.c:486:25: Variable ulIdx used before definition
+ft.c:486:5: Return value (type size_t) ignored: Dir_freeFile(oDE...
+ft.c: (in function FT_getFileContents)
+ft.c:501:19: Variable oPPrevDir used before definition
+ft.c:505:22: Variable oDEnd used before definition
+ft.c:505:29: Variable oPPrevDir used before definition
+ft.c:505:5: Return value (type boolean) ignored: Dir_hasFileChild...
+ft.c:506:39: Variable ulFileIdx used before definition
+ft.c:511:32: Variable oFFile used before definition
+ft.c: (in function FT_replaceFileContents)
+ft.c:529:17: Variable oPPrevDir used before definition
+ft.c:533:22: Variable oDEnd used before definition
+ft.c:533:29: Variable oPPrevDir used before definition
+ft.c:533:5: Return value (type boolean) ignored: Dir_hasFileChild...
+ft.c:534:39: Variable ulFileIdx used before definition
+ft.c:539:35: Variable oFFile used before definition
+ft.c: (in function FT_stat)
+ft.c:559:20: Variable oPPath used before definition
+ft.c:560:20: Variable oPPrevDir used before definition
+ft.c:563:25: Variable oDEnd used before definition
+ft.c:563:32: Variable oPPath used before definition
+ft.c:566:19: Variable oPPrevDir used before definition
+ft.c:570:33: Variable ulIdx used before definition
+ft.c:572:40: Variable oFFile used before definition
+ft.c:572:9: Assignment of int to size_t: *pulSize = File_getContentSize(oFFile)
+  To allow arbitrary integral types to match long unsigned, use +longintegral.
+ft.c:574:19: Variable oPPrevDir used before definition
+ft.c:578:15: Variable oPPrevDir used before definition
+ft.c: (in function FT_strlenAccumulate)
+ft.c:654:52: Variable oFFile used before definition
+ft.c: (in function FT_strcatAccumulate)
 
+All errors due to us using defensive pointers so the variables are
+guarenteed to be assigned but never explicitly done as they 
+are passed as a pointer in a function which is then changed
 
 ------------------------------------------------------------------------
 What warnings does critTer generate on your Part 3 code, and what are
@@ -134,7 +211,64 @@ your disagreements with them? Copy the critTer warnings here, and
 express your disagreement after each warning. If there are no
 warnings, then write "None."
 
+   ft.c: line 225: low priority:
+   A loop should consist of fewer than 35 lines;
+   this loop consists of 38 lines; consider refactoring
 
+   ft.c: line 708: low priority:
+   A file should contain no more than 15 functions;
+   this file contains 18 functions
+
+   fileFT.h: line 14: high priority:
+   A function's comment should refer to each parameter by name;
+   your comment does not refer to 'ulLength'
+
+   ft.c: line 658: high priority:
+   A function's comment should refer to each parameter by name;
+   your comment does not refer to 'oDDir'
+
+   ft.c: line 313: medium priority:
+   Do you want to validate 'oDDir' through an assert?
+
+   ft.c: line 313: medium priority:
+   Do you want to validate 'oPPrevDir' through an assert?
+
+   ft.c: line 339: medium priority:
+   Do you want to validate 'pvContents' through an assert?
+
+   ft.c: line 457: medium priority:
+   Do you want to validate 'pcPath' through an assert?
+
+   ft.c: line 491: medium priority:
+   Do you want to validate 'pcPath' through an assert?
+
+   ft.c: line 519: medium priority:
+   Do you want to validate 'pcPath' through an assert?
+
+   ft.c: line 519: medium priority:
+   Do you want to validate 'pvNewContents' through an assert?
+
+   ft.c: line 545: medium priority:
+   Do you want to validate 'pcPath' through an assert?
+
+   ft.c: line 545: medium priority:
+   Do you want to validate 'pbIsFile' through an assert?
+
+   ft.c: line 545: medium priority:
+   Do you want to validate 'pulSize' through an assert?
+
+   ft.c: line 125: low priority:
+   This function definition probably needs more local comments
+
+   ft.c: line 339: low priority:
+   This function definition probably needs more local comments
+
+   ft.c: line 707: low priority:
+   A source code file should contain fewer than 500 lines;
+   this file contains 708 lines
+
+Length errors (told to ignore)
+Validations not needed as they are allowed to be NULL
 
 ------------------------------------------------------------------------
 For each of the five faulty BDT implementations required by Step
