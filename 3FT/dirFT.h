@@ -18,8 +18,8 @@ typedef struct file *File_T;
 
 /*
   Creates a new node in the Directory Tree, with path oPPath and
-  parent oDParent. Returns an int SUCCESS status and sets *poNResult
-  to be the new node if successful. Otherwise, sets *poNResult to NULL
+  parent oDParent. Returns an int SUCCESS status and sets *poDResult
+  to be the new node if successful. Otherwise, sets *poDResult to NULL
   and returns status:
   * MEMORY_ERROR if memory could not be allocated to complete request
   * CONFLICTING_PATH if oDParent's path is not an ancestor of oPPath
@@ -30,7 +30,8 @@ typedef struct file *File_T;
 */
 int Dir_new(Path_T oPPath, Dir_T oDParent, Dir_T *poDResult);
 
-/* Adds file, oFFile, into file children array of oDDir at index ulIdx */
+/* Adds file, oFFile, into file children array of oDDir at index ulIdx
+* Returns a status code indicating success or failure. */
 int Dir_addFileChild(Dir_T oDDir, File_T oFFile, size_t ulIdx);
 
 /*
@@ -40,7 +41,8 @@ int Dir_addFileChild(Dir_T oDDir, File_T oFFile, size_t ulIdx);
 */
 size_t Dir_free(Dir_T oDDir);
 
-/* remove a file child */
+/* remove a file child, takes a directory node oDDir and index ulIdx 
+* Returns the number of nodes deleted. */
 size_t Dir_freeFile(Dir_T oDDir, size_t ulIdx);
 
 /* Returns the path object representing oDDir's absolute path. */

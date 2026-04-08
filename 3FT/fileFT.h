@@ -14,7 +14,8 @@
 /*
   Creates a new file in the File Tree, with path oPPath and
   parent oFParent. Returns an int SUCCESS status and sets *oFFile
-  to be the new File if successful. Otherwise, sets *oFFile to NULL
+  to be the new File if successful. Also take the contents and length.
+  Otherwise, sets *oFFile to NULL
   and returns status:
   * MEMORY_ERROR if memory could not be allocated to complete request
   * CoFFLICTING_PATH if oFParent's path is not an ancestor of oPPath
@@ -47,13 +48,14 @@ void *File_getContents(File_T oFFile);
 /* replace the contents of oFFile with pvNewContents and length ulLength */
 void *File_replaceContents(File_T oFFile, void *pvNewContents, size_t ulLength);
 
-/* get the size in bytes of the contents of the file */
+/* get the size in bytes of the contents of the file oFFile
+* return the size */
 int File_getContentSize(File_T oFFile);
 
 /*
-  Compares oFFirst and oFSecoFd lexicographically based oF their paths.
+  Compares oFFirst and oFSecond lexicographically based of their paths.
   Returns <0, 0, or >0 if oFFirst is "less than", "equal to", or
-  "greater than" oFSecoFd, respectively.
+  "greater than" oFSecond, respectively.
 */
 int File_compare(File_T oFFirst, Path_T oFSecond);
 

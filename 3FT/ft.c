@@ -120,6 +120,7 @@ static int FT_traversePath(Path_T oPPath, Dir_T *poDFurthest) {
   * CONFLICTING_PATH if the root's path is not a prefix of pcPath
   * NO_SUCH_PATH if no node with pcPath exists in the hierarchy
   * MEMORY_ERROR if memory could not be allocated to complete request
+  * Save to poDResult the node with path pcPath, if it exists, or NULL otherwise.
  */
 static int FT_findDir(const char *pcPath, Dir_T *poDResult) {
    Path_T oPPath = NULL;
@@ -305,8 +306,10 @@ int FT_rmDir(const char *pcPath) {
 }
 
 /* This is a static method that takes in a pcPath string
-corresponding to the absolute path of a file. return 
-the absolute path of the directory containing it  */
+* corresponding to the absolute path of a file. return 
+* the absolute path of the directory containing it
+* Also takes pointers to store the found directory oDDir and its parent path
+* Saves result to oPPrevDir */
 static int FT_getPrevDir(const char *pcPath, Dir_T *oDDir, Path_T *oPPrevDir) {
     int iStatus;
     size_t ulDepth;
@@ -637,6 +640,7 @@ static size_t FT_preOrderTraversal(Dir_T n, DynArray_T d, size_t i) {
   Alternate version of strlen that uses pulAcc as an in-out parameter
   to accumulate a string length, rather than returning the length of
   oNNode's path, and also always adds one addition byte to the sum.
+  Takes in a Dir_T oDDir as the node being used
 */
 static void FT_strlenAccumulate(Dir_T oDDir, size_t *pulAcc) {
     size_t c;
